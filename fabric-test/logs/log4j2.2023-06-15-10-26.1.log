@@ -1,0 +1,4 @@
+[2023-06-15 10:26:28] [WARN ] org.hyperledger.fabric.sdk.helper.Config.<init>(Config.java:127) org.hyperledger.fabric.sdk.helper.Config - Failed to load any configuration from: config.properties. Using toolkit defaults
+[2023-06-15 10:26:31] [INFO ] org.hyperledger.fabric.sdk.Channel.initialize(Channel.java:1149) org.hyperledger.fabric.sdk.Channel - Channel Channel{id: 4, name: mychannel} eventThread started shutdown: false  thread: null 
+[2023-06-15 10:26:31] [INFO ] com.sansec.fabrictest.sdk.FabricClient.invoke(FabricClient.java:197) com.sansec.fabrictest.sdk.FabricClient - peer0.org1.example.com invoke proposal save sucess
+[2023-06-15 10:26:31] [ERROR] com.sansec.fabrictest.sdk.FabricClient.invoke(FabricClient.java:200) com.sansec.fabrictest.sdk.FabricClient - cannot retrieve package for chaincode basicinfo/2.0, error open /var/hyperledger/production/chaincodes/basicinfo.2.0: no such file or directory invoke proposal save fail on peer0.org2.example.com

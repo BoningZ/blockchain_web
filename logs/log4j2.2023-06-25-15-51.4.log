@@ -1,0 +1,46 @@
+[2023-06-25 15:51:48] [ERROR] org.hyperledger.fabric.sdk.Channel.parseConfigBlock(Channel.java:1797) org.hyperledger.fabric.sdk.Channel - getConfigBlock for channel mychannel failed with peer peer0.org1.example.com.  Status FAILURE, details: Channel Channel{id: 3, name: mychannel} Sending proposal with transaction: b9894d6f2fa263a17618aaec11f3662cf0c17f925ad5000cdaa6726695af1acf to Peer{ id: 1, name: peer0.org1.example.com, channelName: mychannel, url: grpcs://peer0.org1.example.com:7051} failed because of: gRPC failure=Status{code=UNAVAILABLE, description=Unable to resolve host peer0.org1.example.com, cause=java.lang.RuntimeException: java.net.UnknownHostException: peer0.org1.example.com
+	at io.grpc.internal.DnsNameResolver.resolveAll(DnsNameResolver.java:399)
+	at io.grpc.internal.DnsNameResolver$Resolve.resolveInternal(DnsNameResolver.java:269)
+	at io.grpc.internal.DnsNameResolver$Resolve.run(DnsNameResolver.java:225)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624)
+	at java.lang.Thread.run(Thread.java:750)
+Caused by: java.net.UnknownHostException: peer0.org1.example.com
+	at java.net.Inet6AddressImpl.lookupAllHostAddr(Native Method)
+	at java.net.InetAddress$2.lookupAllHostAddr(InetAddress.java:929)
+	at java.net.InetAddress.getAddressesFromNameService(InetAddress.java:1324)
+	at java.net.InetAddress.getAllByName0(InetAddress.java:1277)
+	at java.net.InetAddress.getAllByName(InetAddress.java:1193)
+	at java.net.InetAddress.getAllByName(InetAddress.java:1127)
+	at io.grpc.internal.DnsNameResolver$JdkAddressResolver.resolveAddress(DnsNameResolver.java:624)
+	at io.grpc.internal.DnsNameResolver.resolveAll(DnsNameResolver.java:367)
+	... 5 more
+}
+org.hyperledger.fabric.sdk.exception.ProposalException: getConfigBlock for channel mychannel failed with peer peer0.org1.example.com.  Status FAILURE, details: Channel Channel{id: 3, name: mychannel} Sending proposal with transaction: b9894d6f2fa263a17618aaec11f3662cf0c17f925ad5000cdaa6726695af1acf to Peer{ id: 1, name: peer0.org1.example.com, channelName: mychannel, url: grpcs://peer0.org1.example.com:7051} failed because of: gRPC failure=Status{code=UNAVAILABLE, description=Unable to resolve host peer0.org1.example.com, cause=java.lang.RuntimeException: java.net.UnknownHostException: peer0.org1.example.com
+	at io.grpc.internal.DnsNameResolver.resolveAll(DnsNameResolver.java:399)
+	at io.grpc.internal.DnsNameResolver$Resolve.resolveInternal(DnsNameResolver.java:269)
+	at io.grpc.internal.DnsNameResolver$Resolve.run(DnsNameResolver.java:225)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624)
+	at java.lang.Thread.run(Thread.java:750)
+Caused by: java.net.UnknownHostException: peer0.org1.example.com
+	at java.net.Inet6AddressImpl.lookupAllHostAddr(Native Method)
+	at java.net.InetAddress$2.lookupAllHostAddr(InetAddress.java:929)
+	at java.net.InetAddress.getAddressesFromNameService(InetAddress.java:1324)
+	at java.net.InetAddress.getAllByName0(InetAddress.java:1277)
+	at java.net.InetAddress.getAllByName(InetAddress.java:1193)
+	at java.net.InetAddress.getAllByName(InetAddress.java:1127)
+	at io.grpc.internal.DnsNameResolver$JdkAddressResolver.resolveAddress(DnsNameResolver.java:624)
+	at io.grpc.internal.DnsNameResolver.resolveAll(DnsNameResolver.java:367)
+	... 5 more
+}
+	at org.hyperledger.fabric.sdk.Channel.getConfigBlock(Channel.java:869) ~[fabric-sdk-java-1.4.0.jar:?]
+	at org.hyperledger.fabric.sdk.Channel.parseConfigBlock(Channel.java:1781) ~[fabric-sdk-java-1.4.0.jar:?]
+	at org.hyperledger.fabric.sdk.Channel.loadCACertificates(Channel.java:1618) ~[fabric-sdk-java-1.4.0.jar:?]
+	at org.hyperledger.fabric.sdk.Channel.sendProposalToPeers(Channel.java:4059) ~[fabric-sdk-java-1.4.0.jar:?]
+	at org.hyperledger.fabric.sdk.Channel.sendProposal(Channel.java:4032) ~[fabric-sdk-java-1.4.0.jar:?]
+	at org.hyperledger.fabric.sdk.Channel.queryByChaincode(Channel.java:3942) ~[fabric-sdk-java-1.4.0.jar:?]
+	at org.hyperledger.fabric.sdk.Channel.queryByChaincode(Channel.java:3928) ~[fabric-sdk-java-1.4.0.jar:?]
+	at com.sansec.fabrictest.sdk.FabricClient.queryChaincode(FabricClient.java:234) ~[classes/:?]
+	at com.sansec.fabrictest.sdk.SdkMain.queryChaincode(SdkMain.java:218) ~[classes/:?]
+	at com.sansec.fabrictest.sdk.SdkMain.main(SdkMain.java:62) ~[classes/:?]
