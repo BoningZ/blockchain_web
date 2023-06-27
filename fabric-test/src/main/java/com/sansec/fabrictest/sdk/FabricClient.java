@@ -110,7 +110,7 @@ public class FabricClient {
         Collection<ProposalResponse> responses = channel.sendInstantiationProposal(instantiateProposalRequest);
         for (ProposalResponse response : responses) {
             if (response.getStatus().getStatus() == 200) {
-                log.info("{} init sucess", response.getPeer().getName());
+                log.info("{} init success", response.getPeer().getName());
             } else {
                 log.error("{} init fail", response.getMessage());
             }
@@ -147,7 +147,7 @@ public class FabricClient {
         upgradeProposalRequest.setChaincodeLanguage(lang);
         // 设置背书策略
         ChaincodeEndorsementPolicy chaincodeEndorsementPolicy = new ChaincodeEndorsementPolicy();
-        chaincodeEndorsementPolicy.fromYamlFile(new File("E:\\sansec\\chaincode\\src\\basicinfo\\chaincodeendorsementpolicy.yaml"));
+        chaincodeEndorsementPolicy.fromYamlFile(new File("E:\\sansec\\chaincode\\src\\orderManage\\chaincodeendorsementpolicy.yaml"));
         upgradeProposalRequest.setChaincodeEndorsementPolicy(chaincodeEndorsementPolicy);
 
         ChaincodeID.Builder builder = ChaincodeID.newBuilder().setName(chaincodeName).setVersion(chaincodeVersion);
@@ -155,7 +155,7 @@ public class FabricClient {
         Collection<ProposalResponse> responses = channel.sendUpgradeProposal(upgradeProposalRequest);
         for (ProposalResponse response : responses) {
             if (response.getStatus().getStatus() == 200) {
-                log.info("{} upgrade sucess", response.getPeer().getName());
+                log.info("{} upgrade success", response.getPeer().getName());
             } else {
                 log.error("{} upgrade fail", response.getMessage());
             }
@@ -194,7 +194,7 @@ public class FabricClient {
         Collection<ProposalResponse> responses = channel.sendTransactionProposal(transactionProposalRequest, peers);
         for (ProposalResponse response : responses) {
             if (response.getStatus().getStatus() == 200) {
-                log.info("{} invoke proposal {} sucess", response.getPeer().getName(), funcName);
+                log.info("{} invoke proposal {} success", response.getPeer().getName(), funcName);
             } else {
                 String logArgs[] = {response.getMessage(), funcName, response.getPeer().getName()};
                 log.error("{} invoke proposal {} fail on {}", logArgs);

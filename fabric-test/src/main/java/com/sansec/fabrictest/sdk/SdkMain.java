@@ -43,6 +43,9 @@ public class SdkMain {
     // 组织2 tlsca
     private static final String tlsPeerFilePathAddtion2 = "D:\\Java_demo\\fabric-test\\fabric-test\\src\\main\\resources\\crypto-config\\peerOrganizations\\org2.example.com\\tlsca\\tlsca.org2.example.com-cert.pem";
 
+    private static final String sm2PrivateKey="f6e25195d03aea1ab7a6d83043a613a48ebcecfa94a1f0c3b8c1769b1c0a1fd8";
+    private static final String sm2PublicKey="b15a259ddf990a5c69cfd8ec638ff7823e4a7683c88fb724c02f4326d8f71529";
+
     public static void main(String[] args) {
         try {
             //安装合约
@@ -104,8 +107,8 @@ public class SdkMain {
         List<Peer> peers = new ArrayList<>();
         peers.add(peer0);
         peers.add(peer1);
-        fabricClient.installChaincode(TransactionRequest.Type.GO_LANG, "basicinfo", "2.0",
-                "E:\\sansec\\chaincode", "basicinfo", peers);
+        fabricClient.installChaincode(TransactionRequest.Type.GO_LANG, "orderManage", "1.2",
+                "E:\\sansec\\chaincode", "orderManage", peers);
     }
 
     //组织2安装合约
@@ -126,8 +129,8 @@ public class SdkMain {
         List<Peer> peers = new ArrayList<>();
         peers.add(peer0);
         peers.add(peer1);
-        fabricClient.installChaincode(TransactionRequest.Type.GO_LANG, "basicinfo", "2.0",
-                "E:\\sansec\\chaincode", "basicinfo", peers);
+        fabricClient.installChaincode(TransactionRequest.Type.GO_LANG, "orderManage", "1.2",
+                "E:\\sansec\\chaincode", "orderManage", peers);
     }
 
     //合约实例化
@@ -144,8 +147,8 @@ public class SdkMain {
         Peer peer = fabricClient.getPeer("peer0.org1.example.com", "grpcs://peer0.org1.example.com:7051", tlsPeerFilePath);
         Orderer order = fabricClient.getOrderer("orderer.example.com", "grpcs://orderer.example.com:7050", tlsOrderFilePath);
         String initArgs[] = {""};
-        fabricClient.initChaincode("mychannel", TransactionRequest.Type.GO_LANG, "basicinfo",
-                "2.0", order, peer, "init", initArgs);
+        fabricClient.initChaincode("mychannel", TransactionRequest.Type.GO_LANG, "orderManage",
+                "1.2", order, peer, "init", initArgs);
     }
 
     /**
@@ -165,8 +168,8 @@ public class SdkMain {
         Peer peer = fabricClient.getPeer("peer0.org1.example.com", "grpcs://peer0.org1.example.com:7051", tlsPeerFilePath);
         Orderer order = fabricClient.getOrderer("orderer.example.com", "grpcs://orderer.example.com:7050", tlsOrderFilePath);
         String initArgs[] = {""};
-        fabricClient.upgradeChaincode("mychannel", TransactionRequest.Type.GO_LANG, "basicinfo",
-                "2.0", order, peer, "init", initArgs);
+        fabricClient.upgradeChaincode("mychannel", TransactionRequest.Type.GO_LANG, "orderManage",
+                "1.2", order, peer, "init", initArgs);
     }
 
     /**
@@ -190,9 +193,10 @@ public class SdkMain {
         peers.add(peer0);
         peers.add(peer1);
         Orderer order = fabricClient.getOrderer("orderer.example.com", "grpcs://orderer.example.com:7050", tlsOrderFilePath);
-        String initArgs[] = {"110114", "{\"name\":\"zhangsan\",\"identity\":\"110114\",\"mobile\":\"18910012222\"}"};
-        fabricClient.invoke("mychannel", TransactionRequest.Type.GO_LANG, "basicinfo",
-                order, peers, "save", initArgs);
+        //String initArgs[] = {"114514", "5090Ti","100","0.5","2023.06.27","001","002",sm2PublicKey};
+        String initArgs[] = {"114514", "5090Ti","100","0.5","2023.06.27","001","002"};
+        fabricClient.invoke("mychannel", TransactionRequest.Type.GO_LANG, "orderManage",
+                order, peers, "createOrder", initArgs);
     }
 
     /**
@@ -214,8 +218,9 @@ public class SdkMain {
         List<Peer> peers = new ArrayList<>();
         peers.add(peer0);
         peers.add(peer1);
-        String initArgs[] = {"110114"};
-        Map map = fabricClient.queryChaincode(peers, "mychannel", TransactionRequest.Type.GO_LANG, "basicinfo", "query", initArgs);
+        //String initArgs[] = {"114514",sm2PrivateKey};
+        String initArgs[] = {"114514"};
+        Map map = fabricClient.queryChaincode(peers, "mychannel", TransactionRequest.Type.GO_LANG, "orderManage", "getOrder", initArgs);
         System.out.println(map);
     }
 
