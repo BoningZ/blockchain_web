@@ -59,7 +59,12 @@ public class SdkMain {
 //            upgradeChaincode();
 
             //合约触发
-//            invoke();
+            //"createOrder", {"114514", "5090Ti","100","0.5","2023.06.27","001","002"}
+            //"updateOrder", {"114514", "Accepted"}
+            //"addBuyerReview", {"114514", "Good Mining Tool"}
+            //"addSellerReview", {"114514", "Thanks"}
+//            String initArgs[]= {"114514", "I Regret"};
+//            invoke("addSellerReview", initArgs);
 
             // 查询合约
             queryChaincode();
@@ -178,7 +183,7 @@ public class SdkMain {
      *  peer chaincode query -C mychannel -n basicinfo -c '{"Args":["query","110114"]}'
      * @throws Exception
      */
-    public static void invoke() throws Exception {
+    public static void invoke(String fcnName,String[] initArgs) throws Exception {
         UserContext userContext = new UserContext();
         userContext.setAffiliation("Org1");
         userContext.setMspId("Org1MSP");
@@ -194,9 +199,8 @@ public class SdkMain {
         peers.add(peer1);
         Orderer order = fabricClient.getOrderer("orderer.example.com", "grpcs://orderer.example.com:7050", tlsOrderFilePath);
         //String initArgs[] = {"114514", "5090Ti","100","0.5","2023.06.27","001","002",sm2PublicKey};
-        String initArgs[] = {"114514", "5090Ti","100","0.5","2023.06.27","001","002"};
         fabricClient.invoke("mychannel", TransactionRequest.Type.GO_LANG, "orderManage",
-                order, peers, "createOrder", initArgs);
+                order, peers, fcnName, initArgs);
     }
 
     /**
