@@ -39,11 +39,11 @@ public class ProfileController {
         user = tmp.get();
         Map m=new HashMap();
         if(user.getUserType().getName()== EUserType.ROLE_ADMIN){
-            Admin admin =user.getAdmin();
+            Admin admin =adminRepository.getAdminByUser(user);
             m.put("aid", admin.getAid());
             m.put("name", admin.getName());
         }else{
-            Member member =user.getMember();
+            Member member =memberRepository.getMemberByUser(user);
             m.put("mid", member.getMid());
             m.put("name", member.getName());
         }
@@ -58,12 +58,12 @@ public class ProfileController {
         Optional<User> tmp = userRepository.findByUserId(userId);
         user = tmp.get();
         if(user.getUserType().getName()== EUserType.ROLE_ADMIN){
-            Admin admin =user.getAdmin();
+            Admin admin =adminRepository.getAdminByUser(user);
             admin.setAid(dataRequest.getString("aid"));
             admin.setName(dataRequest.getString("name"));
             adminRepository.save(admin);
         }else{
-            Member member =user.getMember();
+            Member member =memberRepository.getMemberByUser(user);
             member.setMid(dataRequest.getString("mid"));
             member.setName(dataRequest.getString("name"));
             memberRepository.save(member);

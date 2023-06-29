@@ -9,8 +9,6 @@ import java.util.Date;
 @Table(	name = "user",
         uniqueConstraints = {
                 @UniqueConstraint(columnNames = "username"),
-                @UniqueConstraint(columnNames = "adminId"),
-                @UniqueConstraint(columnNames = "memberId")
         })
 public class User {
     @Id
@@ -21,13 +19,7 @@ public class User {
     @JoinColumn(name = "user_type_id")
     private UserType userType;
 
-    @ManyToOne
-    @JoinColumn(name="memberId")
-    private Member member;
 
-    @ManyToOne
-    @JoinColumn(name="adminId")
-    private Admin admin;
 
     @NotBlank
     @Size(max = 20)
@@ -38,8 +30,18 @@ public class User {
     @Size(max = 60)
     private String password;
 
+    private Date joinTime;
     private Integer loginCount;
     private Date lastLoginTime;
+
+
+    public Date getJoinTime() {
+        return joinTime;
+    }
+
+    public void setJoinTime(Date joinTime) {
+        this.joinTime = joinTime;
+    }
 
     public User() {
     }
@@ -98,21 +100,7 @@ public class User {
         this.lastLoginTime = lastLoginTime;
     }
 
-    public Member getMember() {
-        return member;
-    }
 
-    public void setMember(Member member) {
-        this.member = member;
-    }
-
-    public Admin getAdmin() {
-        return admin;
-    }
-
-    public void setAdmin(Admin admin) {
-        this.admin = admin;
-    }
 
 
 }

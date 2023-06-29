@@ -1,6 +1,7 @@
 package com.baling.models.user;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 @Entity
@@ -18,6 +19,19 @@ public class Member {
     private String mid;
     @Size(max = 20)
     private String name;
+
+    @OneToOne
+    @NotNull
+    @JoinColumn(name="user_id")
+    private User user;
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
 
 
 

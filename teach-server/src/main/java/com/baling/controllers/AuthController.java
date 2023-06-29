@@ -111,8 +111,9 @@ public class AuthController {
                 Member member =new Member();
                 member.setName(signUpRequest.getString("name"));
                 member.setMid(signUpRequest.getString("mid"));
+                userRepository.save(user);
+                member.setUser(user);
                 memberRepository.save(member);
-                user.setMember(member);
                 break;
             case ROLE_ADMIN:
                 if(adminRepository.existsByAid(signUpRequest.getString("aid")))return CommonMethod.getReturnMessageError("该管理员号已被注册！");
@@ -120,13 +121,12 @@ public class AuthController {
                 Admin admin =new Admin();
                 admin.setName(signUpRequest.getString("name"));
                 admin.setAid(signUpRequest.getString("aid"));
+                userRepository.save(user);
+                admin.setUser(user);
                 adminRepository.save(admin);
-                user.setAdmin(admin);
                 break;
         }
 
-
-        userRepository.save(user);
 
         return CommonMethod.getReturnMessageOK();
     }
