@@ -1,6 +1,0 @@
-[2023-06-25 16:38:24] [WARN ] org.hyperledger.fabric.sdk.helper.Config.<init>(Config.java:127) org.hyperledger.fabric.sdk.helper.Config - Failed to load any configuration from: config.properties. Using toolkit defaults
-[2023-06-25 16:38:25] [INFO ] org.hyperledger.fabric.sdk.Channel.initialize(Channel.java:1149) org.hyperledger.fabric.sdk.Channel - Channel Channel{id: 4, name: mychannel} eventThread started shutdown: false  thread: null 
-[2023-06-25 16:38:49] [INFO ] com.sansec.fabrictest.sdk.FabricClient.invoke(FabricClient.java:197) com.sansec.fabrictest.sdk.FabricClient - peer0.org1.example.com invoke proposal save sucess
-[2023-06-25 16:38:49] [INFO ] com.sansec.fabrictest.sdk.FabricClient.invoke(FabricClient.java:197) com.sansec.fabrictest.sdk.FabricClient - peer0.org2.example.com invoke proposal save sucess
-[2023-06-25 16:38:49] [INFO ] org.hyperledger.fabric.sdk.Channel.initialize(Channel.java:1149) org.hyperledger.fabric.sdk.Channel - Channel Channel{id: 12, name: mychannel} eventThread started shutdown: false  thread: null 
-[2023-06-25 16:38:49] [INFO ] com.sansec.fabrictest.sdk.FabricClient.queryChaincode(FabricClient.java:237) com.sansec.fabrictest.sdk.FabricClient - data is <ByteString@5d8445d7 size=0>
