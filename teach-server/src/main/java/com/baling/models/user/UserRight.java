@@ -28,6 +28,12 @@ public class UserRight {
 
         private Date updateTime;
 
+        public UserRight(Member member, Right right) {
+                this.member = member;
+                this.right = right;
+                this.createTime=this.updateTime=new Date();
+        }
+
         public Integer getId() {
                 return id;
         }

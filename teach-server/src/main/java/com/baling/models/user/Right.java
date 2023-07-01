@@ -10,6 +10,7 @@ import java.util.Date;
 public class Right {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @NotNull
     private Integer id;
 
     @ManyToOne

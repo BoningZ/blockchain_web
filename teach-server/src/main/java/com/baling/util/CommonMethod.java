@@ -18,7 +18,7 @@ public class CommonMethod {
         Map data = new HashMap();
         data.put("data",null);
         data.put("msg",msg);
-        return new   DataResponse(code,data);
+        return new DataResponse(code,data);
     }
     public static  DataResponse getReturnData(Object obj){
         return getReturnData(obj,null);
