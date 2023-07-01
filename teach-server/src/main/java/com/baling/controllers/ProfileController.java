@@ -9,6 +9,7 @@ import com.baling.payload.response.DataResponse;
 import com.baling.repository.user.MemberRepository;
 import com.baling.repository.user.AdminRepository;
 import com.baling.repository.user.UserRepository;
+import com.baling.service.profile.ProfileService;
 import com.baling.util.CommonMethod;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -24,51 +25,18 @@ import java.util.*;
 @RequestMapping("/api/teach")
 public class ProfileController {
     @Autowired
-    UserRepository userRepository;
-    @Autowired
-    AdminRepository adminRepository;
-    @Autowired
-    MemberRepository memberRepository;
+    ProfileService profileService;
 
     @PostMapping("/getProfile")
     @PreAuthorize("hasRole('MEMBER') or hasRole('ADMIN')")
     public DataResponse getProfile(@Valid @RequestBody DataRequest dataRequest){
-        Integer userId= CommonMethod.getUserId();
-        User user;
-        Optional<User> tmp = userRepository.findByUserId(userId);
-        user = tmp.get();
-        Map m=new HashMap();
-        if(user.getUserType().getName()== EUserType.ROLE_ADMIN){
-            Admin admin =adminRepository.getAdminByUser(user);
-            m.put("aid", admin.getAid());
-            m.put("name", admin.getName());
-        }else{
-            Member member =memberRepository.getMemberByUser(user);
-            m.put("mid", member.getMid());
-            m.put("name", member.getName());
-        }
-        return CommonMethod.getReturnData(m);
+        return profileService.getProfile(dataRequest);
     }
 
     @PostMapping("/submitProfile")
     @PreAuthorize("hasRole('MEMBER') or hasRole('ADMIN')")
     public DataResponse submitProfile(@Valid @RequestBody DataRequest dataRequest){
-        Integer userId= CommonMethod.getUserId();
-        User user;
-        Optional<User> tmp = userRepository.findByUserId(userId);
-        user = tmp.get();
-        if(user.getUserType().getName()== EUserType.ROLE_ADMIN){
-            Admin admin =adminRepository.getAdminByUser(user);
-            admin.setAid(dataRequest.getString("aid"));
-            admin.setName(dataRequest.getString("name"));
-            adminRepository.save(admin);
-        }else{
-            Member member =memberRepository.getMemberByUser(user);
-            member.setMid(dataRequest.getString("mid"));
-            member.setName(dataRequest.getString("name"));
-            memberRepository.save(member);
-        }
-        return CommonMethod.getReturnMessageOK();
+        return profileService.submitProfile(dataRequest);
     }
 
 }
