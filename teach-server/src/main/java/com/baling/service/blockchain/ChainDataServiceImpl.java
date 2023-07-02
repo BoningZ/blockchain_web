@@ -14,6 +14,8 @@ import org.hyperledger.fabric.sdk.TransactionRequest;
 import org.hyperledger.fabric.sdk.exception.InvalidArgumentException;
 import org.hyperledger.fabric.sdk.exception.ProposalException;
 import org.hyperledger.fabric.sdk.exception.TransactionException;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ResourceLoader;
@@ -28,6 +30,7 @@ import java.security.spec.InvalidKeySpecException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 @Service
 public class ChainDataServiceImpl implements ChainDataService{
@@ -38,13 +41,16 @@ public class ChainDataServiceImpl implements ChainDataService{
     public DataResponse getTxnById(String id) {
         try {
             UserContext userContext = new UserContext("name","李伟","Org1","Org1MSP");
-            Enrollment enrollment = UserUtils.getEnrollment(path(keyFolderPathOrg1), path(keyFileNameOrg1), path(certFolderPathOrg1), path(certFileNameOrg1));
+            Enrollment enrollment = UserUtils.getEnrollment(path(keyFolderPathOrg1), keyFileNameOrg1, path(certFolderPathOrg1), certFileNameOrg1);
             userContext.setEnrollment(enrollment);
             FabricClient fabricClient = new FabricClient(userContext);
             List<Peer> peers = getPeers(fabricClient);
             String[] initArgs = {id};
             Map map = fabricClient.queryChaincode(peers, "mychannel", TransactionRequest.Type.GO_LANG, "orderManage", "getOrder", initArgs);
-            return CommonMethod.getReturnData(map);
+            String JSONString="";
+            for(Object key:map.keySet())JSONString= (String) map.get(key);
+            JSONObject jsonObject= (JSONObject) new JSONParser().parse(JSONString);
+            return CommonMethod.getReturnData(jsonObject);
         }catch (Exception e){
             return CommonMethod.getReturnMessageError(e.getMessage());
         }
@@ -105,7 +111,7 @@ public class ChainDataServiceImpl implements ChainDataService{
 
     private void invoke(String fcnName,String[] initArgs) throws IOException, NoSuchAlgorithmException, InvalidKeySpecException, CryptoException, InvalidArgumentException, org.hyperledger.fabric.sdk.exception.CryptoException, ClassNotFoundException, InvocationTargetException, IllegalAccessException, InstantiationException, NoSuchMethodException, TransactionException, ProposalException {
         UserContext userContext = new UserContext("name","李伟","Org1","Org1MSP");
-        Enrollment enrollment = UserUtils.getEnrollment(path(keyFolderPathOrg1), path(keyFileNameOrg1), path(certFolderPathOrg1), path(certFileNameOrg1));
+        Enrollment enrollment = UserUtils.getEnrollment(path(keyFolderPathOrg1), keyFileNameOrg1, path(certFolderPathOrg1), certFileNameOrg1);
         userContext.setEnrollment(enrollment);
         FabricClient fabricClient = new FabricClient(userContext);
         List<Peer> peers = getPeers(fabricClient);

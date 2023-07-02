@@ -65,8 +65,8 @@ public class SdkMain {
             //"updateOrder", {"114514", "Accepted"}
             //"addBuyerReview", {"114514", "Good Mining Tool"}
             //"addSellerReview", {"114514", "Thanks"}
-//            String initArgs[]= {"114514", "I Regret"};
-//            invoke("addSellerReview", initArgs);
+//            String initArgs[]= {"5141140", "5060Ti","200","0.4","2023.07.02","003","002"};
+//            invoke("createOrder", initArgs);
 
             // 查询合约
             queryChaincode();
@@ -225,7 +225,7 @@ public class SdkMain {
         peers.add(peer0);
         peers.add(peer1);
         //String initArgs[] = {"114514",sm2PrivateKey};
-        String initArgs[] = {"114514"};
+        String initArgs[] = {"5141140"};
         Map map = fabricClient.queryChaincode(peers, "mychannel", TransactionRequest.Type.GO_LANG, "orderManage", "getOrder", initArgs);
         System.out.println(map);
     }
