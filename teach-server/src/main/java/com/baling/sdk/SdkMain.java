@@ -43,8 +43,10 @@ public class SdkMain {
     // 组织2 tlsca
     private static final String tlsPeerFilePathAddtion2 = "D:\\Java_demo\\fabric-test\\fabric-test\\src\\main\\resources\\crypto-config\\peerOrganizations\\org2.example.com\\tlsca\\tlsca.org2.example.com-cert.pem";
 
-    private static final String sm2PrivateKey="f6e25195d03aea1ab7a6d83043a613a48ebcecfa94a1f0c3b8c1769b1c0a1fd8";
-    private static final String sm2PublicKey="b15a259ddf990a5c69cfd8ec638ff7823e4a7683c88fb724c02f4326d8f71529";
+    private static final String yamlPath= "E:\\sansec\\chaincode\\src\\orderManage\\chaincodeendorsementpolicy.yaml";
+
+//    private static final String sm2PrivateKey="f6e25195d03aea1ab7a6d83043a613a48ebcecfa94a1f0c3b8c1769b1c0a1fd8";
+//    private static final String sm2PublicKey="b15a259ddf990a5c69cfd8ec638ff7823e4a7683c88fb724c02f4326d8f71529";
 
     public static void main(String[] args) {
         try {
@@ -174,7 +176,7 @@ public class SdkMain {
         Orderer order = fabricClient.getOrderer("orderer.example.com", "grpcs://orderer.example.com:7050", tlsOrderFilePath);
         String initArgs[] = {""};
         fabricClient.upgradeChaincode("mychannel", TransactionRequest.Type.GO_LANG, "orderManage",
-                "1.2", order, peer, "init", initArgs);
+                "1.2", order, peer, "init", yamlPath, initArgs);
     }
 
     /**

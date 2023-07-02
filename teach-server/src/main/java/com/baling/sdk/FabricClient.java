@@ -135,7 +135,8 @@ public class FabricClient {
      * @description 合约的升级
      */
     public void upgradeChaincode(String channelName, TransactionRequest.Type lang, String chaincodeName,
-                                 String chaincodeVersion, Orderer order, Peer peer, String funcName, String args[])
+                                 String chaincodeVersion, Orderer order, Peer peer, String funcName, String yamlPath,
+                                 String args[])
             throws TransactionException, ProposalException, InvalidArgumentException, IOException, ChaincodeEndorsementPolicyParseException {
         Channel channel = getChannel(channelName);
         channel.addPeer(peer);
@@ -147,7 +148,7 @@ public class FabricClient {
         upgradeProposalRequest.setChaincodeLanguage(lang);
         // 设置背书策略
         ChaincodeEndorsementPolicy chaincodeEndorsementPolicy = new ChaincodeEndorsementPolicy();
-        chaincodeEndorsementPolicy.fromYamlFile(new File("E:\\sansec\\chaincode\\src\\orderManage\\chaincodeendorsementpolicy.yaml"));
+        chaincodeEndorsementPolicy.fromYamlFile(new File(yamlPath));
         upgradeProposalRequest.setChaincodeEndorsementPolicy(chaincodeEndorsementPolicy);
 
         ChaincodeID.Builder builder = ChaincodeID.newBuilder().setName(chaincodeName).setVersion(chaincodeVersion);

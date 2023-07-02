@@ -29,6 +29,16 @@ public class UserContext implements User, Serializable {
         Security.addProvider(new BouncyCastleProvider());
     }
 
+    public UserContext() {
+    }
+
+    public UserContext(String name, String account, String affiliation, String mspId) {
+        this.name = name;
+        this.account = account;
+        this.affiliation = affiliation;
+        this.mspId = mspId;
+    }
+
     @Override
     public String getName() {
         return name;
