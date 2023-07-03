@@ -21,6 +21,13 @@ public class ChainDataController {
         return chainDataService.getTxnById(orderId);
     }
 
+    @GetMapping("/searchTxs")
+    public DataResponse searchTxs(@RequestParam("startDateTime")String startDateTime,@RequestParam("endDateTime")String endDateTime,
+                                  @RequestParam("buyerId")String buyerId,@RequestParam("sellerId")String sellerId,
+                                  @RequestParam("logisticsStatus")String logisticsStatus,@RequestParam("orderStatus")String orderStatus){
+        return chainDataService.searchTxs(startDateTime,endDateTime,buyerId,sellerId,logisticsStatus,orderStatus);
+    }
+
     @PutMapping("/createTxn")
     public ResponseEntity<?> createTxn(@Valid @RequestBody DataRequest dataRequest){
         return chainDataService.createTxn(dataRequest);

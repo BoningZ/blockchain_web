@@ -16,6 +16,7 @@ import org.hyperledger.fabric.sdk.exception.ProposalException;
 import org.hyperledger.fabric.sdk.exception.TransactionException;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ResourceLoader;
@@ -39,18 +40,21 @@ public class ChainDataServiceImpl implements ChainDataService{
 
     @Override
     public DataResponse getTxnById(String id) {
+        String[] initArgs={id};
         try {
-            UserContext userContext = new UserContext("name","李伟","Org1","Org1MSP");
-            Enrollment enrollment = UserUtils.getEnrollment(path(keyFolderPathOrg1), keyFileNameOrg1, path(certFolderPathOrg1), certFileNameOrg1);
-            userContext.setEnrollment(enrollment);
-            FabricClient fabricClient = new FabricClient(userContext);
-            List<Peer> peers = getPeers(fabricClient);
-            String[] initArgs = {id};
-            Map map = fabricClient.queryChaincode(peers, "mychannel", TransactionRequest.Type.GO_LANG, "orderManage", "getOrder", initArgs);
-            String JSONString="";
-            for(Object key:map.keySet())JSONString= (String) map.get(key);
-            JSONObject jsonObject= (JSONObject) new JSONParser().parse(JSONString);
-            return CommonMethod.getReturnData(jsonObject);
+            String JSONString= search("getOrder",initArgs);
+            return CommonMethod.getReturnData(new JSONParser().parse(JSONString));
+        }catch (Exception e){
+            return CommonMethod.getReturnMessageError(e.getMessage());
+        }
+    }
+
+    @Override
+    public DataResponse searchTxs(String startDateTime, String endDateTime, String buyerId, String sellerId, String logisticsStatus, String orderStatus) {
+        String[] initArgs={startDateTime,endDateTime,buyerId,sellerId,logisticsStatus,orderStatus};
+        try {
+            String JSONString= search("searchOrders",initArgs);
+            return CommonMethod.getReturnData(new JSONParser().parse(JSONString));
         }catch (Exception e){
             return CommonMethod.getReturnMessageError(e.getMessage());
         }
@@ -119,6 +123,18 @@ public class ChainDataServiceImpl implements ChainDataService{
         //String initArgs[] = {"114514", "5090Ti","100","0.5","2023.06.27","001","002",sm2PublicKey};
         fabricClient.invoke("mychannel", TransactionRequest.Type.GO_LANG, "orderManage",
                 order, peers, fcnName, initArgs);
+    }
+
+    private String search(String fcnName,String[] initArgs) throws IOException, InvalidArgumentException, org.hyperledger.fabric.sdk.exception.CryptoException, ClassNotFoundException, InvocationTargetException, IllegalAccessException, InstantiationException, NoSuchMethodException, NoSuchAlgorithmException, InvalidKeySpecException, CryptoException, TransactionException, ProposalException, ParseException {
+        UserContext userContext = new UserContext("name","李伟","Org1","Org1MSP");
+        Enrollment enrollment = UserUtils.getEnrollment(path(keyFolderPathOrg1), keyFileNameOrg1, path(certFolderPathOrg1), certFileNameOrg1);
+        userContext.setEnrollment(enrollment);
+        FabricClient fabricClient = new FabricClient(userContext);
+        List<Peer> peers = getPeers(fabricClient);
+        Map map = fabricClient.queryChaincode(peers, "mychannel", TransactionRequest.Type.GO_LANG, "orderManage", fcnName, initArgs);
+        String JSONString="";
+        for(Object key:map.keySet())JSONString= (String) map.get(key);
+        return JSONString;
     }
 
     private List<Peer> getPeers(FabricClient fabricClient) throws InvalidArgumentException, IOException {

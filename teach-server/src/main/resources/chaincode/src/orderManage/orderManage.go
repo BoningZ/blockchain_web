@@ -60,6 +60,8 @@ func (cc *OrderChaincode) Invoke(stub shim.ChaincodeStubInterface) pb.Response {
 		return cc.addBuyerReview(stub, args)
 	} else if function == "addSellerReview" {
 		return cc.addSellerReview(stub, args)
+	} else if function == "searchOrders" {
+		return cc.searchOrders(stub, args)
 	} else {
 		return shim.Error("Invalid function name.")
 	}
@@ -263,6 +265,62 @@ func (cc *OrderChaincode) addSellerReview(stub shim.ChaincodeStubInterface, args
 	}
 
 	return shim.Success(nil)
+}
+func (cc *OrderChaincode) searchOrders(stub shim.ChaincodeStubInterface, args []string) pb.Response {
+	// Arguments: startDateTime, endDateTime, buyerID, sellerID, logisticsStatus, orderStatus
+
+	if len(args) != 6 {
+		return shim.Error("Expecting 6 arguments: startDateTime, endDateTime, buyerID, sellerID, logisticsStatus, orderStatus")
+	}
+
+	startDateTime := args[0]
+	endDateTime := args[1]
+	buyerID := args[2]
+	sellerID := args[3]
+	logisticsStatus := args[4]
+	orderStatus := args[5]
+
+	// 构建查询的起始键和结束键
+	startKey := "00000000"
+	endKey := "99999999"
+
+	// 获取范围查询的迭代器
+	resultsIterator, err := stub.GetStateByRange(startKey, endKey)
+	if err != nil {
+		return shim.Error("Failed to get query results: " + err.Error())
+	}
+	defer resultsIterator.Close()
+
+	var orders []Order
+
+	// 迭代查询结果
+	for resultsIterator.HasNext() {
+		queryResponse, err := resultsIterator.Next()
+		if err != nil {
+			return shim.Error("Failed to iterate query results: " + err.Error())
+		}
+		var order Order
+		err = json.Unmarshal(queryResponse.Value, &order)
+		if err != nil {
+			return shim.Error("Failed to unmarshal order: " + err.Error())
+		}
+
+		// 根据查询条件进行筛选
+		if (startDateTime == "" || order.OrderTime >= startDateTime) &&
+			(endDateTime == "" || order.OrderTime <= endDateTime) &&
+			(buyerID == "" || order.BuyerID == buyerID) &&
+			(sellerID == "" || order.SellerID == sellerID) &&
+			(logisticsStatus == "" || order.Logistics == logisticsStatus) &&
+			(orderStatus == "" || order.Status == orderStatus) {
+			orders = append(orders, order)
+		}
+	}
+	ordersJSON, err := json.Marshal(orders)
+	if err != nil {
+		return shim.Error("Failed to marshal orders.")
+	}
+	return shim.Success(ordersJSON)
+
 }
 
 //func encryptData(data []byte, publicKeyStr string) ([]byte, error) {

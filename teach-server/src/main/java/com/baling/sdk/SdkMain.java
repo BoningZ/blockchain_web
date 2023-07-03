@@ -50,14 +50,12 @@ public class SdkMain {
 
     public static void main(String[] args) {
         try {
-            //安装合约
+
 //            installChaincodeOrg1();
 //            installChaincodeOrg2();
-
-            //合约实例化
+//
 //            initChaincode();
-
-            // 合约升级
+//
 //            upgradeChaincode();
 
             //合约触发
@@ -67,9 +65,13 @@ public class SdkMain {
             //"addSellerReview", {"114514", "Thanks"}
 //            String initArgs[]= {"5141140", "5060Ti","200","0.4","2023.07.02","003","002"};
 //            invoke("createOrder", initArgs);
+            String initArgs[]={"","","","","",""};
+            queryChaincode("searchOrders",initArgs);
+            //invoke("searchOrders",initArgs);
+
 
             // 查询合约
-            queryChaincode();
+//            queryChaincode();
 
 
         } catch (Exception e) {
@@ -114,8 +116,8 @@ public class SdkMain {
         List<Peer> peers = new ArrayList<>();
         peers.add(peer0);
         peers.add(peer1);
-        fabricClient.installChaincode(TransactionRequest.Type.GO_LANG, "orderManage", "1.2",
-                "E:\\sansec\\chaincode", "orderManage", peers);
+        fabricClient.installChaincode(TransactionRequest.Type.GO_LANG, "orderManage", "1.9",
+                "D:\\Java_demo\\fabric-test\\teach-server\\src\\main\\resources\\chaincode", "orderManage", peers);
     }
 
     //组织2安装合约
@@ -136,8 +138,8 @@ public class SdkMain {
         List<Peer> peers = new ArrayList<>();
         peers.add(peer0);
         peers.add(peer1);
-        fabricClient.installChaincode(TransactionRequest.Type.GO_LANG, "orderManage", "1.2",
-                "E:\\sansec\\chaincode", "orderManage", peers);
+        fabricClient.installChaincode(TransactionRequest.Type.GO_LANG, "orderManage", "1.9",
+                "D:\\Java_demo\\fabric-test\\teach-server\\src\\main\\resources\\chaincode", "orderManage", peers);
     }
 
     //合约实例化
@@ -155,7 +157,7 @@ public class SdkMain {
         Orderer order = fabricClient.getOrderer("orderer.example.com", "grpcs://orderer.example.com:7050", tlsOrderFilePath);
         String initArgs[] = {""};
         fabricClient.initChaincode("mychannel", TransactionRequest.Type.GO_LANG, "orderManage",
-                "1.2", order, peer, "init", initArgs);
+                "1.9", order, peer, "init", initArgs);
     }
 
     /**
@@ -176,7 +178,7 @@ public class SdkMain {
         Orderer order = fabricClient.getOrderer("orderer.example.com", "grpcs://orderer.example.com:7050", tlsOrderFilePath);
         String initArgs[] = {""};
         fabricClient.upgradeChaincode("mychannel", TransactionRequest.Type.GO_LANG, "orderManage",
-                "1.2", order, peer, "init", yamlPath, initArgs);
+                "1.9", order, peer, "init", yamlPath, initArgs);
     }
 
     /**
@@ -210,7 +212,7 @@ public class SdkMain {
      *
      * @throws Exception
      */
-    public static void queryChaincode() throws Exception {
+    public static void queryChaincode(String fcnName,String[] initArgs) throws Exception {
         UserContext userContext = new UserContext();
         userContext.setAffiliation("Org1");
         userContext.setMspId("Org1MSP");
@@ -225,8 +227,8 @@ public class SdkMain {
         peers.add(peer0);
         peers.add(peer1);
         //String initArgs[] = {"114514",sm2PrivateKey};
-        String initArgs[] = {"5141140"};
-        Map map = fabricClient.queryChaincode(peers, "mychannel", TransactionRequest.Type.GO_LANG, "orderManage", "getOrder", initArgs);
+
+        Map map = fabricClient.queryChaincode(peers, "mychannel", TransactionRequest.Type.GO_LANG, "orderManage", fcnName, initArgs);
         System.out.println(map);
     }
 
