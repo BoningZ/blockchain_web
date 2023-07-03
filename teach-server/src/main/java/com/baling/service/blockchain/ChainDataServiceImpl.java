@@ -50,6 +50,17 @@ public class ChainDataServiceImpl implements ChainDataService{
     }
 
     @Override
+    public DataResponse getTxnHistoryById(String id) {
+        String[] initArgs={id};
+        try {
+            String JSONString= search("getOrderHistory",initArgs);
+            return CommonMethod.getReturnData(new JSONParser().parse(JSONString));
+        }catch (Exception e){
+            return CommonMethod.getReturnMessageError(e.getMessage());
+        }
+    }
+
+    @Override
     public DataResponse searchTxs(String startDateTime, String endDateTime, String buyerId, String sellerId, String logisticsStatus, String orderStatus) {
         String[] initArgs={startDateTime,endDateTime,buyerId,sellerId,logisticsStatus,orderStatus};
         try {

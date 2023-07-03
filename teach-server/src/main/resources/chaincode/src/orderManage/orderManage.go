@@ -8,6 +8,8 @@ import (
 	"fmt"
 	"github.com/hyperledger/fabric/core/chaincode/shim"
 	pb "github.com/hyperledger/fabric/protos/peer"
+	"time"
+
 	//	"github.com/tjfoc/gmsm/sm2"
 	//	"math/big"
 	"strconv"
@@ -41,6 +43,12 @@ type Order struct {
 	SellerReview string  `json:"sellerReview"`
 }
 
+type OrderHistory struct {
+	TxID      string    `json:"tx_id"`
+	Timestamp time.Time `json:"timestamp"`
+	Order     Order     `json:"order"`
+}
+
 type OrderChaincode struct {
 }
 
@@ -62,6 +70,8 @@ func (cc *OrderChaincode) Invoke(stub shim.ChaincodeStubInterface) pb.Response {
 		return cc.addSellerReview(stub, args)
 	} else if function == "searchOrders" {
 		return cc.searchOrders(stub, args)
+	} else if function == "getOrderHistory" {
+		return cc.getOrderHistory(stub, args)
 	} else {
 		return shim.Error("Invalid function name.")
 	}
@@ -123,7 +133,43 @@ func (cc *OrderChaincode) createOrder(stub shim.ChaincodeStubInterface, args []s
 
 	return shim.Success(nil)
 }
+func (cc *OrderChaincode) getOrderHistory(stub shim.ChaincodeStubInterface, args []string) pb.Response {
+	if len(args) != 1 {
+		return shim.Error("Expecting 1 argument: OrderID")
+	}
+	orderID := args[0]
+	resultsIterator, err := stub.GetHistoryForKey(orderID)
+	if err != nil {
+		return shim.Error("Failed to get record history: " + err.Error())
+	}
+	defer resultsIterator.Close()
 
+	var orderHistory []OrderHistory
+	// 迭代查询结果
+	for resultsIterator.HasNext() {
+		queryResponse, err := resultsIterator.Next()
+		if err != nil {
+			return shim.Error("Failed to iterate record history: " + err.Error())
+		}
+		var order Order
+		err = json.Unmarshal(queryResponse.Value, &order)
+		if err != nil {
+			return shim.Error("Failed to unmarshal record: " + err.Error())
+		}
+		// 创建记录历史对象
+		history := OrderHistory{
+			TxID:      queryResponse.TxId,
+			Timestamp: time.Unix(queryResponse.Timestamp.Seconds, int64(queryResponse.Timestamp.Nanos)),
+			Order:     order,
+		}
+		orderHistory = append(orderHistory, history)
+	}
+	historyJSON, err := json.Marshal(orderHistory)
+	if err != nil {
+		return shim.Error("Failed to marshal history.")
+	}
+	return shim.Success(historyJSON)
+}
 func (cc *OrderChaincode) getOrder(stub shim.ChaincodeStubInterface, args []string) pb.Response {
 	//if len(args) != 2 {
 	//	return shim.Error("Expecting 2 argument: OrderID, PrivateKey")
@@ -131,7 +177,6 @@ func (cc *OrderChaincode) getOrder(stub shim.ChaincodeStubInterface, args []stri
 	if len(args) != 1 {
 		return shim.Error("Expecting 1 argument: OrderID")
 	}
-
 	orderID := args[0]
 	//privateKey := args[1]
 
@@ -145,21 +190,17 @@ func (cc *OrderChaincode) getOrder(stub shim.ChaincodeStubInterface, args []stri
 	if err != nil {
 		return shim.Error("Failed to unmarshal order.")
 	}
-
 	// 对敏感字段进行解密
 	//decryptedName, err := decryptData([]byte(order.Name), privateKey)
 	decryptedName := order.Name
 	if err != nil {
 		return shim.Error("Failed to decrypt name.")
 	}
-
 	order.Name = decryptedName
-
 	orderJSON, err = json.Marshal(order)
 	if err != nil {
 		return shim.Error("Failed to marshal order.")
 	}
-
 	return shim.Success(orderJSON)
 }
 func (cc *OrderChaincode) updateOrderStatus(stub shim.ChaincodeStubInterface, args []string) pb.Response {
@@ -266,6 +307,7 @@ func (cc *OrderChaincode) addSellerReview(stub shim.ChaincodeStubInterface, args
 
 	return shim.Success(nil)
 }
+
 func (cc *OrderChaincode) searchOrders(stub shim.ChaincodeStubInterface, args []string) pb.Response {
 	// Arguments: startDateTime, endDateTime, buyerID, sellerID, logisticsStatus, orderStatus
 

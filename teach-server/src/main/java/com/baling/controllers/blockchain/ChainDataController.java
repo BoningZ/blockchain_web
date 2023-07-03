@@ -21,6 +21,11 @@ public class ChainDataController {
         return chainDataService.getTxnById(orderId);
     }
 
+    @GetMapping("/getTxnHistory")
+    public DataResponse getTxnHistory(@RequestParam("orderId")String orderId){
+        return chainDataService.getTxnHistoryById(orderId);
+    }
+
     @GetMapping("/searchTxs")
     public DataResponse searchTxs(@RequestParam("startDateTime")String startDateTime,@RequestParam("endDateTime")String endDateTime,
                                   @RequestParam("buyerId")String buyerId,@RequestParam("sellerId")String sellerId,

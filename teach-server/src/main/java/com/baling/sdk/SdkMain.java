@@ -65,8 +65,8 @@ public class SdkMain {
             //"addSellerReview", {"114514", "Thanks"}
 //            String initArgs[]= {"5141140", "5060Ti","200","0.4","2023.07.02","003","002"};
 //            invoke("createOrder", initArgs);
-            String initArgs[]={"","","","","",""};
-            queryChaincode("searchOrders",initArgs);
+            String initArgs[]={"114514"};
+            queryChaincode("getOrderHistory",initArgs);
             //invoke("searchOrders",initArgs);
 
 
@@ -116,7 +116,7 @@ public class SdkMain {
         List<Peer> peers = new ArrayList<>();
         peers.add(peer0);
         peers.add(peer1);
-        fabricClient.installChaincode(TransactionRequest.Type.GO_LANG, "orderManage", "1.9",
+        fabricClient.installChaincode(TransactionRequest.Type.GO_LANG, "orderManage", "2.0",
                 "D:\\Java_demo\\fabric-test\\teach-server\\src\\main\\resources\\chaincode", "orderManage", peers);
     }
 
@@ -138,7 +138,7 @@ public class SdkMain {
         List<Peer> peers = new ArrayList<>();
         peers.add(peer0);
         peers.add(peer1);
-        fabricClient.installChaincode(TransactionRequest.Type.GO_LANG, "orderManage", "1.9",
+        fabricClient.installChaincode(TransactionRequest.Type.GO_LANG, "orderManage", "2.0",
                 "D:\\Java_demo\\fabric-test\\teach-server\\src\\main\\resources\\chaincode", "orderManage", peers);
     }
 
@@ -157,7 +157,7 @@ public class SdkMain {
         Orderer order = fabricClient.getOrderer("orderer.example.com", "grpcs://orderer.example.com:7050", tlsOrderFilePath);
         String initArgs[] = {""};
         fabricClient.initChaincode("mychannel", TransactionRequest.Type.GO_LANG, "orderManage",
-                "1.9", order, peer, "init", initArgs);
+                "2.0", order, peer, "init", initArgs);
     }
 
     /**
@@ -178,7 +178,7 @@ public class SdkMain {
         Orderer order = fabricClient.getOrderer("orderer.example.com", "grpcs://orderer.example.com:7050", tlsOrderFilePath);
         String initArgs[] = {""};
         fabricClient.upgradeChaincode("mychannel", TransactionRequest.Type.GO_LANG, "orderManage",
-                "1.9", order, peer, "init", yamlPath, initArgs);
+                "2.0", order, peer, "init", yamlPath, initArgs);
     }
 
     /**
