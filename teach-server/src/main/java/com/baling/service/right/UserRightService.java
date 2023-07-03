@@ -8,4 +8,5 @@ public interface UserRightService {
     DataResponse getMembers(Integer rightId);
     ResponseEntity<?> deleteMember(Integer memberId,Integer rightId);
     ResponseEntity<?> addMember(Integer memberId, Integer rightId);
+    DataResponse getMemberRights();
 }

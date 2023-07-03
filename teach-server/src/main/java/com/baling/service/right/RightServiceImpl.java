@@ -1,10 +1,7 @@
 package com.baling.service.right;
 
 import com.baling.models.sys_menu.TypeMenu;
-import com.baling.models.user.Admin;
-import com.baling.models.user.ERightType;
-import com.baling.models.user.Right;
-import com.baling.models.user.User;
+import com.baling.models.user.*;
 import com.baling.payload.request.DataRequest;
 import com.baling.payload.response.DataResponse;
 import com.baling.repository.sys_menu.TypeMenuRepository;
@@ -55,11 +52,14 @@ public class RightServiceImpl implements RightService{
     @Override
     public DataResponse getRightList(String type,String name) {
         Integer userId=CommonMethod.getUserId();
-        User uesr=userRepository.findByUserId(userId).get();
-        Admin admin=adminRepository.getAdminByUser(uesr);
+        User user=userRepository.findByUserId(userId).get();
+        Admin admin=adminRepository.getAdminByUser(user);
 
-        ERightType rightType=ERightType.valueOf(type);
-        List<Right> rights=rightRepository.getRightsByAdminAndTypeAndNameLike(admin,rightType,name);
+        List<Right> rights;
+        if(type!=null&&!type.equals("")) {
+            ERightType rightType = ERightType.valueOf(type);
+            rights = rightRepository.getRightsByAdminAndTypeAndNameLike(admin, rightType, "%" + name + "%");
+        }else rights=rightRepository.getRightsByAdminAndNameLike(admin,"%"+name+"%");
         return CommonMethod.getReturnData(rights);
     }
 
@@ -77,8 +77,8 @@ public class RightServiceImpl implements RightService{
     public ResponseEntity<?> addRight(DataRequest dataRequest) {
         try {
             Integer userId = CommonMethod.getUserId();
-            User uesr = userRepository.findByUserId(userId).get();
-            Admin admin = adminRepository.getAdminByUser(uesr);
+            User user = userRepository.findByUserId(userId).get();
+            Admin admin = adminRepository.getAdminByUser(user);
 
             Right right = new Right();
             right.setAdmin(admin);

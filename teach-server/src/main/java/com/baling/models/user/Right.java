@@ -6,11 +6,10 @@ import javax.validation.constraints.Size;
 import java.util.Date;
 
 @Entity
-@Table(	name = "right")
+@Table(	name = "rights")
 public class Right {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @NotNull
     private Integer id;
 
     @ManyToOne

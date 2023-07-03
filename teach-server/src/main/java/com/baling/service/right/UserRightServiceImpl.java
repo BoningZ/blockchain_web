@@ -1,22 +1,20 @@
 package com.baling.service.right;
 
-import com.baling.models.user.Member;
-import com.baling.models.user.Right;
-import com.baling.models.user.UserRight;
+import com.baling.models.user.*;
 import com.baling.payload.response.DataResponse;
 import com.baling.repository.user.MemberRepository;
 import com.baling.repository.user.RightRepository;
+import com.baling.repository.user.UserRepository;
 import com.baling.repository.user.UserRightRepository;
 import com.baling.util.CommonMethod;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+
+import java.util.*;
 
 @Service
 public class UserRightServiceImpl implements UserRightService{
@@ -26,6 +24,9 @@ public class UserRightServiceImpl implements UserRightService{
     UserRightRepository userRightRepository;
     @Autowired
     MemberRepository memberRepository;
+
+    @Autowired
+    UserRepository userRepository;
 
     @Override
     public DataResponse getMembers(Integer rightId) {
@@ -43,6 +44,7 @@ public class UserRightServiceImpl implements UserRightService{
     }
 
     @Override
+    @Transactional
     public ResponseEntity<?> deleteMember(Integer memberId, Integer rightId) {
         try{
             Member member=memberRepository.getById(memberId);
@@ -65,5 +67,16 @@ public class UserRightServiceImpl implements UserRightService{
         }catch (Exception e){
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
+    }
+
+    @Override
+    public DataResponse getMemberRights() {
+        Integer userId=CommonMethod.getUserId();
+        User user=userRepository.findByUserId(userId).get();
+        Member member=memberRepository.getMemberByUser(user);
+        List<UserRight> userRights=userRightRepository.getUserRightsByMember(member);
+        Set<Right> rights=new HashSet<>();
+        for(UserRight userRight:userRights)rights.add(userRight.getRight());
+        return CommonMethod.getReturnData(rights);
     }
 }

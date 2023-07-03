@@ -10,5 +10,7 @@ import java.util.List;
 
 public interface RightRepository extends JpaRepository<Right,Integer> {
     List<Right> getRightsByAdminAndTypeAndNameLike(Admin admin,ERightType type,String name);
+    List<Right> getRightsByAdminAndNameLike(Admin admin,String name);
+    List<Right> getRightsByNameLike(String name);
     void deleteById(Integer id);
 }

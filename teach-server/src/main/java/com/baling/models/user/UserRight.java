@@ -28,6 +28,9 @@ public class UserRight {
 
         private Date updateTime;
 
+        public UserRight() {
+        }
+
         public UserRight(Member member, Right right) {
                 this.member = member;
                 this.right = right;

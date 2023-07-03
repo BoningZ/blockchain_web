@@ -20,12 +20,17 @@ public class UserRightController {
     }
 
     @DeleteMapping("/deleteMember")
-    public ResponseEntity<?> deleteMember(@RequestParam("userId")Integer memberId, @RequestParam("rightId")Integer rightId){
+    public ResponseEntity<?> deleteMember(@RequestParam("memberId")Integer memberId, @RequestParam("rightId")Integer rightId){
         return userRightService.deleteMember(memberId,rightId);
     }
 
     @PutMapping("/addMember")
-    public ResponseEntity<?> addMember(@RequestParam("userId")Integer memberId, @RequestParam("rightId")Integer rightId){
+    public ResponseEntity<?> addMember(@RequestParam("memberId")Integer memberId, @RequestParam("rightId")Integer rightId){
         return userRightService.addMember(memberId,rightId);
+    }
+
+    @GetMapping("/getMemberRights")
+    public DataResponse getMemberRights(){
+        return userRightService.getMemberRights();
     }
 }
