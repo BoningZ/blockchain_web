@@ -10,6 +10,8 @@ public interface ChainDataService {
     DataResponse searchTxs(String startDateTime,String endDateTime,String buyerId,String sellerId,String logisticsStatus,String orderStatus);
     ResponseEntity<?> createTxn(DataRequest dataRequest);
     ResponseEntity<?> updateTxn(DataRequest dataRequest);
+    ResponseEntity<?> deleteTxn(String id);
+    ResponseEntity<?> updateLogistics(DataRequest dataRequest);
     ResponseEntity<?> addBuyerReview(DataRequest dataRequest);
     ResponseEntity<?> addSellerReview(DataRequest dataRequest);
 }

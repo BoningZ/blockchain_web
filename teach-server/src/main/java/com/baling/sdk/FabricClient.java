@@ -179,7 +179,7 @@ public class FabricClient {
      */
     public void invoke(String channelName, TransactionRequest.Type lang, String chaincodeName, Orderer order,
                        List<Peer> peers, String funcName, String args[])
-            throws TransactionException, ProposalException, InvalidArgumentException {
+            throws Exception {
         Channel channel = getChannel(channelName);
         channel.addOrderer(order);
         for (Peer p : peers) {
@@ -199,6 +199,7 @@ public class FabricClient {
             } else {
                 String logArgs[] = {response.getMessage(), funcName, response.getPeer().getName()};
                 log.error("{} invoke proposal {} fail on {}", logArgs);
+                throw new Exception(response.getMessage());
             }
         }
         channel.sendTransaction(responses);
@@ -219,7 +220,7 @@ public class FabricClient {
      */
     public Map queryChaincode(List<Peer> peers, String channelName, TransactionRequest.Type lang,
                               String chaincodeName, String funcName, String args[])
-            throws TransactionException, InvalidArgumentException, ProposalException {
+            throws Exception {
         Channel channel = getChannel(channelName);
         for (Peer p : peers) {
             channel.addPeer(p);
@@ -241,7 +242,7 @@ public class FabricClient {
             } else {
                 log.error("data get error {}", response.getMessage());
                 map.put(response.getStatus().getStatus(), response.getMessage());
-                return map;
+                throw new Exception(response.getMessage());
             }
         }
         map.put("code", "404");

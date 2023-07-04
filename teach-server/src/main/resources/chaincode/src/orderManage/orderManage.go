@@ -72,6 +72,10 @@ func (cc *OrderChaincode) Invoke(stub shim.ChaincodeStubInterface) pb.Response {
 		return cc.searchOrders(stub, args)
 	} else if function == "getOrderHistory" {
 		return cc.getOrderHistory(stub, args)
+	} else if function == "updateLogistics" {
+		return cc.updateLogistics(stub, args)
+	} else if function == "deleteOrder" {
+		return cc.deleteOrder(stub, args)
 	} else {
 		return shim.Error("Invalid function name.")
 	}
@@ -86,6 +90,15 @@ func (cc *OrderChaincode) createOrder(stub shim.ChaincodeStubInterface, args []s
 	}
 
 	orderID := args[0]
+
+	order1JSON, err := stub.GetState(orderID)
+	if err != nil {
+		return shim.Error("failed to execute check: " + err.Error())
+	}
+	if order1JSON != nil {
+		return shim.Error("order already exited!")
+	}
+
 	name := args[1]
 	quantity, err := strconv.Atoi(args[2])
 	if err != nil {
@@ -103,9 +116,9 @@ func (cc *OrderChaincode) createOrder(stub shim.ChaincodeStubInterface, args []s
 	// 对敏感字段进行加密
 	//encryptedName, err := encryptData([]byte(name), pubkey)
 	encryptedName := name
-	if err != nil {
-		return shim.Error("Failed to encrypt name.")
-	}
+	//if err != nil {
+	//	return shim.Error("Failed to encrypt name.")
+	//}
 
 	order := Order{
 		OrderID:      orderID,
@@ -184,6 +197,9 @@ func (cc *OrderChaincode) getOrder(stub shim.ChaincodeStubInterface, args []stri
 	if err != nil {
 		return shim.Error("Failed to get order.")
 	}
+	if orderJSON == nil {
+		return shim.Error("Order does not exist.")
+	}
 
 	var order Order
 	err = json.Unmarshal(orderJSON, &order)
@@ -215,6 +231,9 @@ func (cc *OrderChaincode) updateOrderStatus(stub shim.ChaincodeStubInterface, ar
 	if err != nil {
 		return shim.Error("Failed to get order.")
 	}
+	if orderJSON == nil {
+		return shim.Error("Order does not exist.")
+	}
 
 	var order Order
 	err = json.Unmarshal(orderJSON, &order)
@@ -238,6 +257,69 @@ func (cc *OrderChaincode) updateOrderStatus(stub shim.ChaincodeStubInterface, ar
 	return shim.Success(nil)
 }
 
+func (cc *OrderChaincode) updateLogistics(stub shim.ChaincodeStubInterface, args []string) pb.Response {
+	if len(args) != 2 {
+		return shim.Error("Expecting 2 arguments: OrderID, Status")
+	}
+
+	orderID := args[0]
+	status := args[1]
+
+	orderJSON, err := stub.GetState(orderID)
+	if err != nil {
+		return shim.Error("Failed to get order.")
+	}
+	if orderJSON == nil {
+		return shim.Error("Order does not exist!")
+	}
+
+	var order Order
+	err = json.Unmarshal(orderJSON, &order)
+	if err != nil {
+		return shim.Error("Failed to unmarshal order: " + err.Error())
+	}
+
+	// 更新订单状态
+	order.Logistics = status
+
+	orderJSON, err = json.Marshal(order)
+	if err != nil {
+		return shim.Error("Failed to marshal order.")
+	}
+
+	err = stub.PutState(orderID, orderJSON)
+	if err != nil {
+		return shim.Error("Failed to update order.")
+	}
+
+	return shim.Success(nil)
+}
+
+func (cc *OrderChaincode) deleteOrder(stub shim.ChaincodeStubInterface, args []string) pb.Response {
+	if len(args) != 1 {
+		return shim.Error("Expecting 1 argument: OrderID")
+	}
+
+	orderID := args[0]
+
+	// 查询要删除的记录是否存在
+	orderJSON, err := stub.GetState(orderID)
+	if err != nil {
+		return shim.Error("Failed to get order.")
+	}
+	if orderJSON == nil {
+		return shim.Error("Order does not exist.")
+	}
+
+	// 从账本中删除记录
+	err = stub.DelState(orderID)
+	if err != nil {
+		return shim.Error("Failed to delete order: " + err.Error())
+	}
+
+	return shim.Success(nil)
+}
+
 func (cc *OrderChaincode) addBuyerReview(stub shim.ChaincodeStubInterface, args []string) pb.Response {
 	if len(args) != 2 {
 		return shim.Error("Expecting 2 arguments: OrderID, BuyerReview")
@@ -249,6 +331,9 @@ func (cc *OrderChaincode) addBuyerReview(stub shim.ChaincodeStubInterface, args 
 	orderJSON, err := stub.GetState(orderID)
 	if err != nil {
 		return shim.Error("Failed to get order.")
+	}
+	if orderJSON == nil {
+		return shim.Error("Order does not exist.")
 	}
 
 	var order Order
@@ -284,6 +369,9 @@ func (cc *OrderChaincode) addSellerReview(stub shim.ChaincodeStubInterface, args
 	orderJSON, err := stub.GetState(orderID)
 	if err != nil {
 		return shim.Error("Failed to get order.")
+	}
+	if orderJSON == nil {
+		return shim.Error("Order does not exist.")
 	}
 
 	var order Order

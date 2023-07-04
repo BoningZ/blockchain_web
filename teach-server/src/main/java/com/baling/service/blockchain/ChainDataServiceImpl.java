@@ -103,6 +103,28 @@ public class ChainDataServiceImpl implements ChainDataService{
     }
 
     @Override
+    public ResponseEntity<?> deleteTxn(String id) {
+        String[] initArgs={id};
+        try{
+            invoke("deleteOrder",initArgs);
+            return ResponseEntity.ok("deleted");
+        }catch (Exception e){
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
+    }
+
+    @Override
+    public ResponseEntity<?> updateLogistics(DataRequest dataRequest) {
+        String[] initArgs={dataRequest.getString("orderId"),dataRequest.getString("status")};
+        try{
+            invoke("updateLogistics",initArgs);
+            return ResponseEntity.ok("updated");
+        }catch (Exception e){
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
+    }
+
+    @Override
     public ResponseEntity<?> addBuyerReview(DataRequest dataRequest) {
         String[] initArgs={dataRequest.getString("orderId"),dataRequest.getString("buyerReview")};
         try{
@@ -124,7 +146,7 @@ public class ChainDataServiceImpl implements ChainDataService{
         }
     }
 
-    private void invoke(String fcnName,String[] initArgs) throws IOException, NoSuchAlgorithmException, InvalidKeySpecException, CryptoException, InvalidArgumentException, org.hyperledger.fabric.sdk.exception.CryptoException, ClassNotFoundException, InvocationTargetException, IllegalAccessException, InstantiationException, NoSuchMethodException, TransactionException, ProposalException {
+    private void invoke(String fcnName,String[] initArgs) throws Exception {
         UserContext userContext = new UserContext("name","李伟","Org1","Org1MSP");
         Enrollment enrollment = UserUtils.getEnrollment(path(keyFolderPathOrg1), keyFileNameOrg1, path(certFolderPathOrg1), certFileNameOrg1);
         userContext.setEnrollment(enrollment);
@@ -136,7 +158,7 @@ public class ChainDataServiceImpl implements ChainDataService{
                 order, peers, fcnName, initArgs);
     }
 
-    private String search(String fcnName,String[] initArgs) throws IOException, InvalidArgumentException, org.hyperledger.fabric.sdk.exception.CryptoException, ClassNotFoundException, InvocationTargetException, IllegalAccessException, InstantiationException, NoSuchMethodException, NoSuchAlgorithmException, InvalidKeySpecException, CryptoException, TransactionException, ProposalException, ParseException {
+    private String search(String fcnName,String[] initArgs) throws Exception {
         UserContext userContext = new UserContext("name","李伟","Org1","Org1MSP");
         Enrollment enrollment = UserUtils.getEnrollment(path(keyFolderPathOrg1), keyFileNameOrg1, path(certFolderPathOrg1), certFileNameOrg1);
         userContext.setEnrollment(enrollment);

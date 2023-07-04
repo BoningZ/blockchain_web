@@ -38,6 +38,16 @@ public class ChainDataController {
         return chainDataService.createTxn(dataRequest);
     }
 
+    @DeleteMapping("/deleteTxn")
+    public ResponseEntity<?> deleteTxn(@RequestParam("orderId")String orderId){
+        return chainDataService.deleteTxn(orderId);
+    }
+
+    @PutMapping("/updateLogistics")
+    public ResponseEntity<?> updateLogistics(@Valid @RequestBody DataRequest dataRequest){
+        return chainDataService.updateLogistics(dataRequest);
+    }
+
     @PutMapping("/updateTxn")
     public ResponseEntity<?> updateTxn(@Valid @RequestBody DataRequest dataRequest){
         return chainDataService.updateTxn(dataRequest);

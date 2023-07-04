@@ -94,4 +94,50 @@ public class RightServiceImpl implements RightService{
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
     }
+
+    @Override
+    public DataResponse getRightTypeList() {
+        List list=new ArrayList();
+        Map m=new HashMap();
+        m.put("value","RIGHT_DELETE");
+        m.put("label","删除交易");
+        list.add(m);
+
+        m=new HashMap();
+        m.put("value","RIGHT_ADD");
+        m.put("label","创建交易");
+        list.add(m);
+
+        m=new HashMap();
+        m.put("value","RIGHT_UPDATE_STATUS");
+        m.put("label","更改交易状态");
+        list.add(m);
+
+        m=new HashMap();
+        m.put("value","RIGHT_UPDATE_BUYER");
+        m.put("label","添加买家评价");
+        list.add(m);
+
+        m=new HashMap();
+        m.put("value","RIGHT_UPDATE_SELLER");
+        m.put("label","添加卖家评价");
+        list.add(m);
+
+        m=new HashMap();
+        m.put("value","RIGHT_UPDATE_LOGISTICS");
+        m.put("label","更新物流信息");
+        list.add(m);
+
+        m=new HashMap();
+        m.put("value","RIGHT_QUERY");
+        m.put("label","查询交易");
+        list.add(m);
+
+        m=new HashMap();
+        m.put("value","RIGHT_QUERY_HISTORY");
+        m.put("label","查询交易历史");
+        list.add(m);
+
+        return CommonMethod.getReturnData(list);
+    }
 }
