@@ -1,8 +1,8 @@
-package com.baling.repository.user;
+package com.baling.repository.right;
 
 import com.baling.models.user.Member;
-import com.baling.models.user.Right;
-import com.baling.models.user.UserRight;
+import com.baling.models.right.Right;
+import com.baling.models.right.UserRight;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 

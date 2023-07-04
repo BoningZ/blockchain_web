@@ -1,6 +1,5 @@
 package com.baling.service.right;
 
-import com.baling.models.user.ERightType;
 import com.baling.payload.request.DataRequest;
 import com.baling.payload.response.DataResponse;
 import org.springframework.http.ResponseEntity;

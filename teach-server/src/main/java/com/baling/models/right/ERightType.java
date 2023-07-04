@@ -1,4 +1,4 @@
-package com.baling.models.user;
+package com.baling.models.right;
 
 public enum ERightType {
     RIGHT_DELETE,

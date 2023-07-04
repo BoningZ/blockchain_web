@@ -1,11 +1,13 @@
 package com.baling.service.right;
 
+import com.baling.models.right.Right;
+import com.baling.models.right.UserRight;
 import com.baling.models.user.*;
 import com.baling.payload.response.DataResponse;
 import com.baling.repository.user.MemberRepository;
-import com.baling.repository.user.RightRepository;
+import com.baling.repository.right.RightRepository;
 import com.baling.repository.user.UserRepository;
-import com.baling.repository.user.UserRightRepository;
+import com.baling.repository.right.UserRightRepository;
 import com.baling.util.CommonMethod;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

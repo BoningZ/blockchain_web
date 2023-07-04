@@ -1,5 +1,6 @@
 package com.baling.models.log;
 
+import com.baling.models.right.RightType;
 import com.baling.models.user.User;
 import jdk.nashorn.internal.runtime.regexp.joni.constants.OPCode;
 
@@ -22,8 +23,8 @@ public class Log {
 
     @ManyToOne
     @NotNull
-    @JoinColumn(name="operate_id")
-    private Operate operate;
+    @JoinColumn(name="right_type_id")
+    private RightType rightType;
 
     @Size(max = 300)
     private String description;
@@ -32,6 +33,17 @@ public class Log {
     private Date operateTime;
 
     private int operateState;
+
+
+    public Log() {
+    }
+
+    public Log(User user, RightType rightType, String description) {
+        this.user = user;
+        this.rightType = rightType;
+        this.description = description;
+        this.operateTime=new Date();
+    }
 
     public Integer getId() {
         return id;
@@ -49,12 +61,12 @@ public class Log {
         this.user = user;
     }
 
-    public Operate getOperate() {
-        return operate;
+    public RightType getRightType() {
+        return rightType;
     }
 
-    public void setOperate(Operate operate) {
-        this.operate = operate;
+    public void setRightType(RightType rightType) {
+        this.rightType = rightType;
     }
 
     public String getDescription() {

@@ -1,4 +1,6 @@
-package com.baling.models.user;
+package com.baling.models.right;
+
+import com.baling.models.user.Admin;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -16,10 +18,9 @@ public class Right {
     @JoinColumn(name = "admin_id")
     private Admin admin;
 
-    @Enumerated(EnumType.STRING)
-    @Column(length = 20)
-    @NotNull
-    private ERightType type;
+    @ManyToOne
+    @JoinColumn(name="right_type_id")
+    private RightType rightType;
 
     @Size(max = 20)
     private String name;
@@ -28,12 +29,12 @@ public class Right {
 
     private Date updateTime;
 
-    public ERightType getType() {
-        return type;
+    public RightType getRightType() {
+        return rightType;
     }
 
-    public void setType(ERightType type) {
-        this.type = type;
+    public void setRightType(RightType rightType) {
+        this.rightType = rightType;
     }
 
     public String getName() {

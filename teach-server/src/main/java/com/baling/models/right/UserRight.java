@@ -1,4 +1,6 @@
-package com.baling.models.user;
+package com.baling.models.right;
+
+import com.baling.models.user.Member;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
