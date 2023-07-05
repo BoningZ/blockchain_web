@@ -1,5 +1,6 @@
 package com.baling.service.right;
 
+import com.baling.models.log.Log;
 import com.baling.models.right.ERightType;
 import com.baling.models.right.Right;
 import com.baling.models.right.RightType;
@@ -7,6 +8,7 @@ import com.baling.models.sys_menu.TypeMenu;
 import com.baling.models.user.*;
 import com.baling.payload.request.DataRequest;
 import com.baling.payload.response.DataResponse;
+import com.baling.repository.log.LogRepository;
 import com.baling.repository.right.RightTypeRepository;
 import com.baling.repository.sys_menu.TypeMenuRepository;
 import com.baling.repository.user.AdminRepository;
@@ -37,6 +39,11 @@ public class RightServiceImpl implements RightService{
 
     @Autowired
     RightTypeRepository rightTypeRepository;
+
+    @Autowired
+    LogRepository logRepository;
+
+
 
     @Override
     public DataResponse getMenuList(DataRequest dataRequest) {
@@ -72,32 +79,45 @@ public class RightServiceImpl implements RightService{
 
     @Override
     public ResponseEntity<?> deleteRight(Integer id) {
+        Integer userId = CommonMethod.getUserId();
+        User user = userRepository.findByUserId(userId).get();
+        Log log=new Log(user,rightTypeRepository.getByValue(ERightType.RIGHT_DELETE_RIGHT),"删除权限："+id);
         try {
             rightRepository.deleteById(id);
+            log.setOperateState(0);
+            logRepository.save(log);
             return ResponseEntity.ok("Delete Succeeded");
         }catch (Exception e){
+            log.setOperateState(1);
+            logRepository.save(log);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
     }
 
     @Override
     public ResponseEntity<?> addRight(DataRequest dataRequest) {
+        Integer userId = CommonMethod.getUserId();
+        User user = userRepository.findByUserId(userId).get();
+        Admin admin = adminRepository.getAdminByUser(user);
+        Log log=new Log(user,rightTypeRepository.getByValue(ERightType.RIGHT_ADD_RIGHT),"添加权限");
         try {
-            Integer userId = CommonMethod.getUserId();
-            User user = userRepository.findByUserId(userId).get();
-            Admin admin = adminRepository.getAdminByUser(user);
-
             Right right = new Right();
             right.setAdmin(admin);
-            right.setName(dataRequest.getString("name"));
+            String name=dataRequest.getString("name");
+            right.setName(name);
+            log.setDescription("添加权限："+name);
             right.setRightType(rightTypeRepository.getByValue(ERightType.valueOf(dataRequest.getString("type"))));
             right.setCreateTime(new Date());
             right.setUpdateTime(new Date());
 
             rightRepository.save(right);
 
+            log.setOperateState(0);
+            logRepository.save(log);
             return ResponseEntity.ok("Save Succeeded");
         }catch (Exception e){
+            log.setOperateState(1);
+            logRepository.save(log);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
     }

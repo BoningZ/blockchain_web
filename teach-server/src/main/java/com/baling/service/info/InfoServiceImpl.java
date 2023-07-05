@@ -15,7 +15,7 @@ public class InfoServiceImpl implements InfoService{
     MemberRepository memberRepository;
     @Override
     public DataResponse getRightTypeList() {
-        return CommonMethod.getReturnData(rightTypeRepository.getAllBy());
+        return CommonMethod.getReturnData(rightTypeRepository.getRightTypesByAdminOnly(false));
     }
 
     @Override

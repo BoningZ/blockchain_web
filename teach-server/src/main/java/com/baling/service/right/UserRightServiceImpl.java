@@ -1,9 +1,13 @@
 package com.baling.service.right;
 
+import com.baling.models.log.Log;
+import com.baling.models.right.ERightType;
 import com.baling.models.right.Right;
 import com.baling.models.right.UserRight;
 import com.baling.models.user.*;
 import com.baling.payload.response.DataResponse;
+import com.baling.repository.log.LogRepository;
+import com.baling.repository.right.RightTypeRepository;
 import com.baling.repository.user.MemberRepository;
 import com.baling.repository.right.RightRepository;
 import com.baling.repository.user.UserRepository;
@@ -30,6 +34,12 @@ public class UserRightServiceImpl implements UserRightService{
     @Autowired
     UserRepository userRepository;
 
+    @Autowired
+    LogRepository logRepository;
+
+    @Autowired
+    RightTypeRepository rightTypeRepository;
+
     @Override
     public DataResponse getMembers(Integer rightId) {
         Right right=rightRepository.getById(rightId);
@@ -48,25 +58,37 @@ public class UserRightServiceImpl implements UserRightService{
     @Override
     @Transactional
     public ResponseEntity<?> deleteMember(Integer memberId, Integer rightId) {
+        Log log=new Log(getCurrentUser(),rightTypeRepository.getByValue(ERightType.RIGHT_WARRANT),"去除权限");
         try{
             Member member=memberRepository.getById(memberId);
             Right right=rightRepository.getById(rightId);
             userRightRepository.deleteByMemberAndRight(member,right);
+            log.setDescription("去除用户："+member.getName()+" 的"+right.getName()+"权限");
+            log.setOperateState(0);
+            logRepository.save(log);
             return ResponseEntity.ok("Deleted");
         }catch (Exception e){
+            log.setOperateState(1);
+            logRepository.save(log);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
     }
 
     @Override
     public ResponseEntity<?> addMember(Integer memberId, Integer rightId) {
+        Log log=new Log(getCurrentUser(),rightTypeRepository.getByValue(ERightType.RIGHT_WARRANT),"添加权限");
         try{
             Member member=memberRepository.getById(memberId);
             Right right=rightRepository.getById(rightId);
             UserRight userRight=new UserRight(member,right);
             userRightRepository.save(userRight);
+            log.setDescription("给予用户："+member.getName()+" 权限："+right.getName());
+            log.setOperateState(0);
+            logRepository.save(log);
             return ResponseEntity.ok("Added");
         }catch (Exception e){
+            log.setOperateState(1);
+            logRepository.save(log);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
     }
@@ -80,5 +102,11 @@ public class UserRightServiceImpl implements UserRightService{
         Set<Right> rights=new HashSet<>();
         for(UserRight userRight:userRights)rights.add(userRight.getRight());
         return CommonMethod.getReturnData(rights);
+    }
+
+    private User getCurrentUser(){
+        Integer userId = CommonMethod.getUserId();
+        User user = userRepository.findByUserId(userId).get();
+        return user;
     }
 }

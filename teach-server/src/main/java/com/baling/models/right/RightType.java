@@ -17,6 +17,16 @@ public class RightType {
 
     private String label;
 
+    private boolean adminOnly;
+
+    public boolean isAdminOnly() {
+        return adminOnly;
+    }
+
+    public void setAdminOnly(boolean adminOnly) {
+        this.adminOnly = adminOnly;
+    }
+
     public Integer getId() {
         return id;
     }

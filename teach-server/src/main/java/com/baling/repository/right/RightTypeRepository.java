@@ -9,4 +9,5 @@ import java.util.List;
 public interface RightTypeRepository extends JpaRepository<RightType, Integer> {
     RightType getByValue(ERightType value);
     List<RightType> getAllBy();
+    List<RightType> getRightTypesByAdminOnly(boolean adminOnly);
 }
