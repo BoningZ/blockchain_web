@@ -1,10 +1,14 @@
 package com.baling.service.auth;
 
+import com.baling.models.log.Log;
+import com.baling.models.right.ERightType;
 import com.baling.models.user.*;
 import com.baling.payload.request.DataRequest;
 import com.baling.payload.request.LoginRequest;
 import com.baling.payload.response.DataResponse;
 import com.baling.payload.response.JwtResponse;
+import com.baling.repository.log.LogRepository;
+import com.baling.repository.right.RightTypeRepository;
 import com.baling.repository.user.AdminRepository;
 import com.baling.repository.user.MemberRepository;
 import com.baling.repository.user.UserRepository;
@@ -24,6 +28,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -48,8 +53,23 @@ public class AuthServiceImpl implements AuthService{
     @Autowired
     PasswordEncoder encoder;
 
+    @Autowired
+    LogRepository logRepository;
+
+    @Autowired
+    RightTypeRepository rightTypeRepository;
+
     @Override
     public ResponseEntity<?> authenticate(LoginRequest loginRequest) {
+        Log log=null;
+        Optional<User> fakeUser = userRepository.findByUsername(loginRequest.getUsername());
+        if(fakeUser.isPresent()){
+            log=new Log(fakeUser.get(),rightTypeRepository.getByValue(ERightType.valueOf("RIGHT_LOGIN")),"尝试登录");
+            log.setOperateState(1);
+            logRepository.save(log);
+        }
+
+
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
 
@@ -64,6 +84,10 @@ public class AuthServiceImpl implements AuthService{
         user.setLastLoginTime(new Date());
         user.setLoginCount(user.getLoginCount()+1);
         userRepository.save(user);
+        if(log!=null){
+            log.setOperateState(0);
+            logRepository.save(log);
+        }
 
         return ResponseEntity.ok(new JwtResponse(jwt,
                 userDetails.getId(),
@@ -128,11 +152,16 @@ public class AuthServiceImpl implements AuthService{
         String oldPassword = dataRequest.getString("oldPassword");
         String newPassword = dataRequest.getString("newPassword");
         User u = userRepository.findById(userId).get();
+        Log log=new Log(u,rightTypeRepository.getByValue(ERightType.valueOf("RIGHT_CHANGE_PASSWORD")),"修改密码");
         if(!encoder.matches(oldPassword, u.getPassword())) {
+            log.setOperateState(1);
+            logRepository.save(log);
             return CommonMethod.getReturnMessageError("原密码错误！");
         }
         u.setPassword(encoder.encode(newPassword));
         userRepository.save(u);
+        log.setOperateState(0);
+        logRepository.save(log);
         return CommonMethod.getReturnMessageOK();
     }
 }

@@ -1,7 +1,13 @@
 package com.baling.service.blockchain;
 
+import com.baling.models.log.Log;
+import com.baling.models.right.ERightType;
+import com.baling.models.user.User;
 import com.baling.payload.request.DataRequest;
 import com.baling.payload.response.DataResponse;
+import com.baling.repository.log.LogRepository;
+import com.baling.repository.right.RightTypeRepository;
+import com.baling.repository.user.UserRepository;
 import com.baling.sdk.FabricClient;
 import com.baling.sdk.UserContext;
 import com.baling.sdk.UserUtils;
@@ -38,13 +44,25 @@ public class ChainDataServiceImpl implements ChainDataService{
     @Autowired
     ResourceLoader resourceLoader;
 
+    @Autowired
+    LogRepository logRepository;
+    @Autowired
+    UserRepository userRepository;
+    @Autowired
+    RightTypeRepository rightTypeRepository;
+
     @Override
     public DataResponse getTxnById(String id) {
         String[] initArgs={id};
+        Log log=new Log(getCurrentUser(),rightTypeRepository.getByValue(ERightType.RIGHT_QUERY),"查询交易，编号："+id);
         try {
             String JSONString= search("getOrder",initArgs);
+            log.setOperateState(0);
+            logRepository.save(log);
             return CommonMethod.getReturnData(new JSONParser().parse(JSONString));
         }catch (Exception e){
+            log.setOperateState(1);
+            logRepository.save(log);
             return CommonMethod.getReturnMessageError(e.getMessage());
         }
     }
@@ -52,10 +70,15 @@ public class ChainDataServiceImpl implements ChainDataService{
     @Override
     public DataResponse getTxnHistoryById(String id) {
         String[] initArgs={id};
+        Log log=new Log(getCurrentUser(),rightTypeRepository.getByValue(ERightType.RIGHT_QUERY_HISTORY),"查询交易历史，编号："+id);
         try {
             String JSONString= search("getOrderHistory",initArgs);
+            log.setOperateState(0);
+            logRepository.save(log);
             return CommonMethod.getReturnData(new JSONParser().parse(JSONString));
         }catch (Exception e){
+            log.setOperateState(1);
+            logRepository.save(log);
             return CommonMethod.getReturnMessageError(e.getMessage());
         }
     }
@@ -63,10 +86,15 @@ public class ChainDataServiceImpl implements ChainDataService{
     @Override
     public DataResponse searchTxs(String startDateTime, String endDateTime, String buyerId, String sellerId, String logisticsStatus, String orderStatus) {
         String[] initArgs={startDateTime,endDateTime,buyerId,sellerId,logisticsStatus,orderStatus};
+        Log log=new Log(getCurrentUser(),rightTypeRepository.getByValue(ERightType.RIGHT_QUERY),"搜索交易");
         try {
             String JSONString= search("searchOrders",initArgs);
+            log.setOperateState(0);
+            logRepository.save(log);
             return CommonMethod.getReturnData(new JSONParser().parse(JSONString));
         }catch (Exception e){
+            log.setOperateState(1);
+            logRepository.save(log);
             return CommonMethod.getReturnMessageError(e.getMessage());
         }
     }
@@ -83,21 +111,32 @@ public class ChainDataServiceImpl implements ChainDataService{
         String[] initArgs={dataRequest.getString("orderId"),dataRequest.getString("name"),dataRequest.getString("quantity"),
                             dataRequest.getString("amount"),dataRequest.getString("orderTime"),
                             dataRequest.getString("buyerId"),dataRequest.getString("sellerId")};
+        Log log=new Log(getCurrentUser(),rightTypeRepository.getByValue(ERightType.RIGHT_ADD),"创建交易");
         try{
             invoke("createOrder",initArgs);
+            log.setOperateState(0);
+            logRepository.save(log);
             return ResponseEntity.ok("created");
         }catch (Exception e){
+            log.setOperateState(1);
+            logRepository.save(log);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
     }
 
     @Override
     public ResponseEntity<?> updateTxn(DataRequest dataRequest) {
-        String[] initArgs={dataRequest.getString("orderId"),dataRequest.getString("status")};
+        String orderId=dataRequest.getString("orderId"), status=dataRequest.getString("status");
+        String[] initArgs={orderId,status};
+        Log log=new Log(getCurrentUser(),rightTypeRepository.getByValue(ERightType.RIGHT_UPDATE_STATUS),"修改交易："+orderId+" 为状态："+status);
         try{
             invoke("updateOrder",initArgs);
+            log.setOperateState(0);
+            logRepository.save(log);
             return ResponseEntity.ok("updated");
         }catch (Exception e){
+            log.setOperateState(1);
+            logRepository.save(log);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
     }
@@ -105,43 +144,66 @@ public class ChainDataServiceImpl implements ChainDataService{
     @Override
     public ResponseEntity<?> deleteTxn(String id) {
         String[] initArgs={id};
+        Log log=new Log(getCurrentUser(),rightTypeRepository.getByValue(ERightType.RIGHT_DELETE),"删除交易："+id);
         try{
             invoke("deleteOrder",initArgs);
+            log.setOperateState(0);
+            logRepository.save(log);
             return ResponseEntity.ok("deleted");
         }catch (Exception e){
+            log.setOperateState(1);
+            logRepository.save(log);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
     }
 
     @Override
     public ResponseEntity<?> updateLogistics(DataRequest dataRequest) {
-        String[] initArgs={dataRequest.getString("orderId"),dataRequest.getString("status")};
+        String orderId=dataRequest.getString("orderId"), status=dataRequest.getString("status");
+        String[] initArgs={orderId,status};
+        Log log=new Log(getCurrentUser(),rightTypeRepository.getByValue(ERightType.RIGHT_UPDATE_LOGISTICS),"修改交易："+orderId+"物流状态为："+status);
         try{
             invoke("updateLogistics",initArgs);
+            log.setOperateState(0);
+            logRepository.save(log);
             return ResponseEntity.ok("updated");
         }catch (Exception e){
+            log.setOperateState(1);
+            logRepository.save(log);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
     }
 
     @Override
     public ResponseEntity<?> addBuyerReview(DataRequest dataRequest) {
-        String[] initArgs={dataRequest.getString("orderId"),dataRequest.getString("buyerReview")};
+        String orderId=dataRequest.getString("orderId");
+        String[] initArgs={orderId,dataRequest.getString("buyerReview")};
+        Log log=new Log(getCurrentUser(),rightTypeRepository.getByValue(ERightType.RIGHT_UPDATE_BUYER),"添加买家评价："+orderId);
         try{
             invoke("addBuyerReview",initArgs);
+            log.setOperateState(0);
+            logRepository.save(log);
             return ResponseEntity.ok("added");
         }catch (Exception e){
+            log.setOperateState(1);
+            logRepository.save(log);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
     }
 
     @Override
     public ResponseEntity<?> addSellerReview(DataRequest dataRequest) {
+        String orderId=dataRequest.getString("orderId");
         String[] initArgs={dataRequest.getString("orderId"),dataRequest.getString("sellerReview")};
+        Log log=new Log(getCurrentUser(),rightTypeRepository.getByValue(ERightType.RIGHT_UPDATE_SELLER),"添加卖家评价："+orderId);
         try{
             invoke("addSellerReview",initArgs);
+            log.setOperateState(0);
+            logRepository.save(log);
             return ResponseEntity.ok("added");
         }catch (Exception e){
+            log.setOperateState(1);
+            logRepository.save(log);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
     }
@@ -177,6 +239,12 @@ public class ChainDataServiceImpl implements ChainDataService{
         peers.add(peer0);
         peers.add(peer1);
         return peers;
+    }
+
+    private User getCurrentUser(){
+        Integer userId = CommonMethod.getUserId();
+        User user = userRepository.findByUserId(userId).get();
+        return user;
     }
 
     private String path(String filePath) throws IOException {

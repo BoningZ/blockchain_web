@@ -9,6 +9,6 @@ public interface RightService {
     DataResponse getRightList(String type, String name);
     ResponseEntity<?> deleteRight(Integer id);
     ResponseEntity<?> addRight(DataRequest dataRequest);
-    DataResponse getRightTypeList();
+
 
 }

@@ -102,8 +102,5 @@ public class RightServiceImpl implements RightService{
         }
     }
 
-    @Override
-    public DataResponse getRightTypeList() {
-        return CommonMethod.getReturnData(rightTypeRepository.getAllBy());
-    }
+
 }

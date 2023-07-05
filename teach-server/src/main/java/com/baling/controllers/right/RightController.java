@@ -31,9 +31,6 @@ public class RightController {
         return rightService.addRight(dataRequest);
     }
 
-    @GetMapping("/getRightTypeList")
-    public DataResponse getRightTypeList(){
-        return rightService.getRightTypeList();
-    }
+
 
 }
