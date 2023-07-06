@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.List;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
@@ -17,8 +18,8 @@ public class RightController {
     RightService rightService;
 
     @GetMapping("/getRightList")
-    public DataResponse getRightList(@RequestParam("type")String type,@RequestParam("name")String name,@RequestParam("page")int page){
-        return rightService.getRightList(type,name,page);
+    public DataResponse getRightList(@RequestParam(value = "types",required = false) List<Integer> types, @RequestParam("name")String name, @RequestParam("page")int page){
+        return rightService.getRightList(types,name,page);
     }
 
     @DeleteMapping("/deleteRight")
@@ -29,6 +30,11 @@ public class RightController {
     @PutMapping("/addRight")
     public ResponseEntity<?> addRight(@Valid @RequestBody DataRequest dataRequest){
         return rightService.addRight(dataRequest);
+    }
+
+    @PutMapping("/updateRight")
+    public ResponseEntity<?> updateRight(@Valid @RequestBody DataRequest dataRequest){
+        return rightService.updateRight(dataRequest);
     }
 
 

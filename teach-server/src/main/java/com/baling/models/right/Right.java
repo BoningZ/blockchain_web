@@ -6,6 +6,7 @@ import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.util.Date;
+import java.util.List;
 
 @Entity
 @Table(	name = "rights")
@@ -18,9 +19,13 @@ public class Right {
     @JoinColumn(name = "admin_id")
     private Admin admin;
 
-    @ManyToOne
-    @JoinColumn(name="right_type_id")
-    private RightType rightType;
+    @ManyToMany
+    @JoinTable(
+            name = "right_right_type",
+            joinColumns = @JoinColumn(name = "right_id"),
+            inverseJoinColumns = @JoinColumn(name = "right_type_id")
+    )
+    private List<RightType> rightTypes;
 
     @Size(max = 20)
     private String name;
@@ -29,12 +34,12 @@ public class Right {
 
     private Date updateTime;
 
-    public RightType getRightType() {
-        return rightType;
+    public List<RightType> getRightTypes() {
+        return rightTypes;
     }
 
-    public void setRightType(RightType rightType) {
-        this.rightType = rightType;
+    public void setRightTypes(List<RightType> rightTypes) {
+        this.rightTypes = rightTypes;
     }
 
     public String getName() {

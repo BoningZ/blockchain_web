@@ -68,7 +68,7 @@ public class RightServiceImpl implements RightService{
     }
 
     @Override
-    public DataResponse getRightList(String type,String name,int page) {
+    public DataResponse getRightList(List<Integer> types,String name,int page) {
         Integer userId=CommonMethod.getUserId();
         User user=userRepository.findByUserId(userId).get();
         Admin admin=adminRepository.getAdminByUser(user);
@@ -76,9 +76,9 @@ public class RightServiceImpl implements RightService{
         Page<Right> rightPage;
         Sort sort = Sort.by(Sort.Direction.ASC, "id");
         Pageable pageable = PageRequest.of(page, 50, sort);
-        if(type!=null&&!type.equals("")) {
-            RightType rightType=rightTypeRepository.getByValue(ERightType.valueOf(type));
-            rightPage = rightRepository.getRightPageByAdminAndRightTypeAndNameLike(admin, rightType, "%" + name + "%",pageable);
+        if(types!=null&&types.size()>0) {
+            List<RightType> rightTypes=rightTypeRepository.getRightTypesByIdIn(types);
+            rightPage = rightRepository. getRightPageByAdminAndRightTypesInAndNameLike(admin, rightTypes, "%" + name + "%",pageable);
         }else rightPage=rightRepository.getRightPageByAdminAndNameLike(admin,"%"+name+"%",pageable);
         Map m=new HashMap();
         m.put("totalPages",rightPage.getTotalPages());
@@ -115,7 +115,7 @@ public class RightServiceImpl implements RightService{
             String name=dataRequest.getString("name");
             right.setName(name);
             log.setDescription("添加权限："+name);
-            right.setRightType(rightTypeRepository.getByValue(ERightType.valueOf(dataRequest.getString("type"))));
+            right.setRightTypes(rightTypeRepository.getRightTypesByIdIn((List<Integer>) dataRequest.getList("types")));
             right.setCreateTime(new Date());
             right.setUpdateTime(new Date());
 
@@ -124,6 +124,32 @@ public class RightServiceImpl implements RightService{
             log.setOperateState(0);
             logRepository.save(log);
             return ResponseEntity.ok("Save Succeeded");
+        }catch (Exception e){
+            log.setOperateState(1);
+            logRepository.save(log);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
+    }
+
+    @Override
+    public ResponseEntity<?> updateRight(DataRequest dataRequest) {
+        Integer userId = CommonMethod.getUserId();
+        User user = userRepository.findByUserId(userId).get();
+        Admin admin = adminRepository.getAdminByUser(user);
+        Log log=new Log(user,rightTypeRepository.getByValue(ERightType.RIGHT_UPDATE_RIGHT),"修改权限");
+        try {
+            Right right = rightRepository.getById(dataRequest.getInteger("id"));
+
+            right.setName(dataRequest.getString("name"));
+            log.setDescription("修改权限："+right.getName());
+            right.setRightTypes(rightTypeRepository.getRightTypesByIdIn((List<Integer>) dataRequest.getList("types")));
+            right.setUpdateTime(new Date());
+
+            rightRepository.save(right);
+
+            log.setOperateState(0);
+            logRepository.save(log);
+            return ResponseEntity.ok("Update Succeeded");
         }catch (Exception e){
             log.setOperateState(1);
             logRepository.save(log);

@@ -12,8 +12,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
 public interface RightRepository extends JpaRepository<Right,Integer> {
-    List<Right> getRightsByAdminAndRightTypeAndNameLike(Admin admin, RightType rightType, String name);
-    Page<Right> getRightPageByAdminAndRightTypeAndNameLike(Admin admin, RightType rightType, String name, Pageable pageable);
+
+    Page<Right> getRightPageByAdminAndRightTypesInAndNameLike(Admin admin, List<RightType> rightTypes, String name, Pageable pageable);
     List<Right> getRightsByAdminAndNameLike(Admin admin,String name);
     Page<Right> getRightPageByAdminAndNameLike(Admin admin,String name,Pageable pageable);
     List<Right> getRightsByNameLike(String name);
