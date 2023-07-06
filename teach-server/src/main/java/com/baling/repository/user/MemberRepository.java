@@ -12,4 +12,5 @@ public interface MemberRepository extends JpaRepository<Member,Integer> {
     Boolean existsByMid(String mid);
     Member getMemberByUser(User user);
     List<Member> getMembersBy();
+    List<Member> getMembersByMidLikeOrNameLike(String mid,String name);
 }

@@ -5,8 +5,8 @@ import org.springframework.data.relational.core.sql.In;
 import org.springframework.http.ResponseEntity;
 
 public interface UserRightService {
-    DataResponse getMembers(Integer rightId);
+    DataResponse getMembers(Integer rightId,int page);
     ResponseEntity<?> deleteMember(Integer memberId,Integer rightId);
     ResponseEntity<?> addMember(Integer memberId, Integer rightId);
-    DataResponse getMemberRights();
+    DataResponse getMemberRights(int page);
 }

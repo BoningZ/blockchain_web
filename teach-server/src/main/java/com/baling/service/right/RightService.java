@@ -6,7 +6,7 @@ import org.springframework.http.ResponseEntity;
 
 public interface RightService {
     DataResponse getMenuList(DataRequest dataRequest);
-    DataResponse getRightList(String type, String name);
+    DataResponse getRightList(String type, String name,int page);
     ResponseEntity<?> deleteRight(Integer id);
     ResponseEntity<?> addRight(DataRequest dataRequest);
 

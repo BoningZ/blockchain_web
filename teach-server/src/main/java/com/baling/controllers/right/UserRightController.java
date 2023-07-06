@@ -15,8 +15,8 @@ public class UserRightController {
     UserRightService userRightService;
 
     @GetMapping("/getMembers")
-    public DataResponse getUsers(@RequestParam("rightId")Integer id){
-        return userRightService.getMembers(id);
+    public DataResponse getUsers(@RequestParam("rightId")Integer id,@RequestParam("page")int page){
+        return userRightService.getMembers(id,page);
     }
 
     @DeleteMapping("/deleteMember")
@@ -30,7 +30,7 @@ public class UserRightController {
     }
 
     @GetMapping("/getMemberRights")
-    public DataResponse getMemberRights(){
-        return userRightService.getMemberRights();
+    public DataResponse getMemberRights(@RequestParam("page")int page){
+        return userRightService.getMemberRights(page);
     }
 }

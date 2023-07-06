@@ -14,6 +14,10 @@ import com.baling.repository.user.UserRepository;
 import com.baling.repository.right.UserRightRepository;
 import com.baling.util.CommonMethod;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -41,9 +45,14 @@ public class UserRightServiceImpl implements UserRightService{
     RightTypeRepository rightTypeRepository;
 
     @Override
-    public DataResponse getMembers(Integer rightId) {
+    public DataResponse getMembers(Integer rightId,int page) {
         Right right=rightRepository.getById(rightId);
-        List<UserRight> userRights=userRightRepository.getUserRightsByRight(right);
+
+
+        Sort sort = Sort.by(Sort.Direction.ASC, "id");
+        Pageable pageable = PageRequest.of(page, 50, sort);
+        Page<UserRight> rightPage=userRightRepository.getUserRightPageByRight(right,pageable);
+        List<UserRight> userRights=rightPage.getContent();
         List<Map> members=new ArrayList<>();
         for(UserRight ur:userRights){
             Map m=new HashMap();
@@ -52,7 +61,10 @@ public class UserRightServiceImpl implements UserRightService{
             m.put("updateTime",ur.getUpdateTime());
             members.add(m);
         }
-        return CommonMethod.getReturnData(members);
+        Map retMap=new HashMap();
+        retMap.put("totalPages",rightPage.getTotalPages());
+        retMap.put("data",members);
+        return CommonMethod.getReturnData(retMap);
     }
 
     @Override
@@ -94,14 +106,21 @@ public class UserRightServiceImpl implements UserRightService{
     }
 
     @Override
-    public DataResponse getMemberRights() {
+    public DataResponse getMemberRights(int page) {
         Integer userId=CommonMethod.getUserId();
         User user=userRepository.findByUserId(userId).get();
         Member member=memberRepository.getMemberByUser(user);
-        List<UserRight> userRights=userRightRepository.getUserRightsByMember(member);
+
+        Sort sort = Sort.by(Sort.Direction.ASC, "id");
+        Pageable pageable = PageRequest.of(page, 50, sort);
+        Page<UserRight> rightPage=userRightRepository.getUserRightPageByMember(member,pageable);
+        List<UserRight> userRights=rightPage.getContent();
         Set<Right> rights=new HashSet<>();
         for(UserRight userRight:userRights)rights.add(userRight.getRight());
-        return CommonMethod.getReturnData(rights);
+        Map retMap=new HashMap();
+        retMap.put("totalPages",rightPage.getTotalPages());
+        retMap.put("data",rights);
+        return CommonMethod.getReturnData(retMap);
     }
 
     private User getCurrentUser(){

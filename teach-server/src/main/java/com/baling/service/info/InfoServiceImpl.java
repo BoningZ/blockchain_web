@@ -19,7 +19,7 @@ public class InfoServiceImpl implements InfoService{
     }
 
     @Override
-    public DataResponse getMemberList() {
-        return CommonMethod.getReturnData(memberRepository.getMembersBy());
+    public DataResponse getMemberList(String condition) {
+        return CommonMethod.getReturnData(memberRepository.getMembersByMidLikeOrNameLike("%"+condition+"%","%"+condition+"%"));
     }
 }

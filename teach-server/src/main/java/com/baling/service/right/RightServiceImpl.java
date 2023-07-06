@@ -16,6 +16,10 @@ import com.baling.repository.right.RightRepository;
 import com.baling.repository.user.UserRepository;
 import com.baling.util.CommonMethod;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -64,17 +68,22 @@ public class RightServiceImpl implements RightService{
     }
 
     @Override
-    public DataResponse getRightList(String type,String name) {
+    public DataResponse getRightList(String type,String name,int page) {
         Integer userId=CommonMethod.getUserId();
         User user=userRepository.findByUserId(userId).get();
         Admin admin=adminRepository.getAdminByUser(user);
 
-        List<Right> rights;
+        Page<Right> rightPage;
+        Sort sort = Sort.by(Sort.Direction.ASC, "id");
+        Pageable pageable = PageRequest.of(page, 50, sort);
         if(type!=null&&!type.equals("")) {
             RightType rightType=rightTypeRepository.getByValue(ERightType.valueOf(type));
-            rights = rightRepository.getRightsByAdminAndRightTypeAndNameLike(admin, rightType, "%" + name + "%");
-        }else rights=rightRepository.getRightsByAdminAndNameLike(admin,"%"+name+"%");
-        return CommonMethod.getReturnData(rights);
+            rightPage = rightRepository.getRightPageByAdminAndRightTypeAndNameLike(admin, rightType, "%" + name + "%",pageable);
+        }else rightPage=rightRepository.getRightPageByAdminAndNameLike(admin,"%"+name+"%",pageable);
+        Map m=new HashMap();
+        m.put("totalPages",rightPage.getTotalPages());
+        m.put("data",rightPage.getContent());
+        return CommonMethod.getReturnData(m);
     }
 
     @Override

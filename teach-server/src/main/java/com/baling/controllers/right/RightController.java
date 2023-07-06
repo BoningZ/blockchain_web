@@ -17,8 +17,8 @@ public class RightController {
     RightService rightService;
 
     @GetMapping("/getRightList")
-    public DataResponse getRightList(@RequestParam("type")String type,@RequestParam("name")String name){
-        return rightService.getRightList(type,name);
+    public DataResponse getRightList(@RequestParam("type")String type,@RequestParam("name")String name,@RequestParam("page")int page){
+        return rightService.getRightList(type,name,page);
     }
 
     @DeleteMapping("/deleteRight")

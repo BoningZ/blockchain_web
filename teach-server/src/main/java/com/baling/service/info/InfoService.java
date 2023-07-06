@@ -4,5 +4,5 @@ import com.baling.payload.response.DataResponse;
 
 public interface InfoService {
     DataResponse getRightTypeList();
-    DataResponse getMemberList();
+    DataResponse getMemberList(String condition);
 }
