@@ -19,6 +19,16 @@ public class RightType {
 
     private boolean adminOnly;
 
+    private int level;
+
+    public int getLevel() {
+        return level;
+    }
+
+    public void setLevel(int level) {
+        this.level = level;
+    }
+
     public boolean isAdminOnly() {
         return adminOnly;
     }

@@ -10,4 +10,8 @@ public interface RightTypeRepository extends JpaRepository<RightType, Integer> {
     RightType getByValue(ERightType value);
     List<RightType> getAllBy();
     List<RightType> getRightTypesByAdminOnly(boolean adminOnly);
+
+    List<RightType> getRightTypesByLevelLessThan(int level);
+
+    List<RightType> getRightTypesByValueIn(List<ERightType> values);
 }
