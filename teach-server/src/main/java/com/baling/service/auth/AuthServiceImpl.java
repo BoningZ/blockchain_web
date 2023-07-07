@@ -16,6 +16,7 @@ import com.baling.repository.user.UserTypeRepository;
 import com.baling.security.jwt.JwtUtils;
 import com.baling.security.services.UserDetailsImpl;
 import com.baling.util.CommonMethod;
+import com.baling.util.SharedServiceUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -58,6 +59,9 @@ public class AuthServiceImpl implements AuthService{
 
     @Autowired
     RightTypeRepository rightTypeRepository;
+
+    @Autowired
+    SharedServiceUtil sharedServiceUtil;
 
     @Override
     public ResponseEntity<?> authenticate(LoginRequest loginRequest) {

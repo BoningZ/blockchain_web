@@ -12,6 +12,7 @@ import com.baling.sdk.FabricClient;
 import com.baling.sdk.UserContext;
 import com.baling.sdk.UserUtils;
 import com.baling.util.CommonMethod;
+import com.baling.util.SharedServiceUtil;
 import org.bouncycastle.crypto.CryptoException;
 import org.hyperledger.fabric.sdk.Enrollment;
 import org.hyperledger.fabric.sdk.Orderer;
@@ -51,8 +52,12 @@ public class ChainDataServiceImpl implements ChainDataService{
     @Autowired
     RightTypeRepository rightTypeRepository;
 
+    @Autowired
+    SharedServiceUtil sharedServiceUtil;
+
     @Override
     public DataResponse getTxnById(String id) {
+        if(!sharedServiceUtil.hasRight(ERightType.RIGHT_QUERY))return CommonMethod.getReturnMessageError("无查询权限！");
         String[] initArgs={id};
         Log log=new Log(getCurrentUser(),rightTypeRepository.getByValue(ERightType.RIGHT_QUERY),"查询交易，编号："+id);
         try {
@@ -69,6 +74,7 @@ public class ChainDataServiceImpl implements ChainDataService{
 
     @Override
     public DataResponse getTxnHistoryById(String id) {
+        if(!sharedServiceUtil.hasRight(ERightType.RIGHT_QUERY_HISTORY))return CommonMethod.getReturnMessageError("无查询历史权限！");
         String[] initArgs={id};
         Log log=new Log(getCurrentUser(),rightTypeRepository.getByValue(ERightType.RIGHT_QUERY_HISTORY),"查询交易历史，编号："+id);
         try {
@@ -85,6 +91,7 @@ public class ChainDataServiceImpl implements ChainDataService{
 
     @Override
     public DataResponse searchTxs(String startDateTime, String endDateTime, String buyerId, String sellerId, String logisticsStatus, String orderStatus) {
+        if(!sharedServiceUtil.hasRight(ERightType.RIGHT_QUERY))return CommonMethod.getReturnMessageError("无查询权限！");
         String[] initArgs={startDateTime,endDateTime,buyerId,sellerId,logisticsStatus,orderStatus};
         Log log=new Log(getCurrentUser(),rightTypeRepository.getByValue(ERightType.RIGHT_QUERY),"搜索交易");
         try {
@@ -101,6 +108,7 @@ public class ChainDataServiceImpl implements ChainDataService{
 
     @Override
     public ResponseEntity<?> createTxn(DataRequest dataRequest) {
+        if(!sharedServiceUtil.hasRight(ERightType.RIGHT_ADD))return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("无创建权限");
 //        OrderID string `json:"orderId"`
 //        Name         string  `json:"name"`
 //        Quantity     int     `json:"quantity"`
@@ -126,6 +134,7 @@ public class ChainDataServiceImpl implements ChainDataService{
 
     @Override
     public ResponseEntity<?> updateTxn(DataRequest dataRequest) {
+        if(!sharedServiceUtil.hasRight(ERightType.RIGHT_UPDATE_STATUS))return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("无更改状态权限");
         String orderId=dataRequest.getString("orderId"), status=dataRequest.getString("status");
         String[] initArgs={orderId,status};
         Log log=new Log(getCurrentUser(),rightTypeRepository.getByValue(ERightType.RIGHT_UPDATE_STATUS),"修改交易："+orderId+" 为状态："+status);
@@ -143,6 +152,7 @@ public class ChainDataServiceImpl implements ChainDataService{
 
     @Override
     public ResponseEntity<?> deleteTxn(String id) {
+        if(!sharedServiceUtil.hasRight(ERightType.RIGHT_DELETE))return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("无删除权限");
         String[] initArgs={id};
         Log log=new Log(getCurrentUser(),rightTypeRepository.getByValue(ERightType.RIGHT_DELETE),"删除交易："+id);
         try{
@@ -159,6 +169,7 @@ public class ChainDataServiceImpl implements ChainDataService{
 
     @Override
     public ResponseEntity<?> updateLogistics(DataRequest dataRequest) {
+        if(!sharedServiceUtil.hasRight(ERightType.RIGHT_UPDATE_LOGISTICS))return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("无更改物流状态权限");
         String orderId=dataRequest.getString("orderId"), status=dataRequest.getString("status");
         String[] initArgs={orderId,status};
         Log log=new Log(getCurrentUser(),rightTypeRepository.getByValue(ERightType.RIGHT_UPDATE_LOGISTICS),"修改交易："+orderId+"物流状态为："+status);
@@ -176,6 +187,7 @@ public class ChainDataServiceImpl implements ChainDataService{
 
     @Override
     public ResponseEntity<?> addBuyerReview(DataRequest dataRequest) {
+        if(!sharedServiceUtil.hasRight(ERightType.RIGHT_UPDATE_BUYER))return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("无添加买家评价权限");
         String orderId=dataRequest.getString("orderId");
         String[] initArgs={orderId,dataRequest.getString("buyerReview")};
         Log log=new Log(getCurrentUser(),rightTypeRepository.getByValue(ERightType.RIGHT_UPDATE_BUYER),"添加买家评价："+orderId);
@@ -193,6 +205,7 @@ public class ChainDataServiceImpl implements ChainDataService{
 
     @Override
     public ResponseEntity<?> addSellerReview(DataRequest dataRequest) {
+        if(!sharedServiceUtil.hasRight(ERightType.RIGHT_UPDATE_SELLER))return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("无添加卖家评价权限");
         String orderId=dataRequest.getString("orderId");
         String[] initArgs={dataRequest.getString("orderId"),dataRequest.getString("sellerReview")};
         Log log=new Log(getCurrentUser(),rightTypeRepository.getByValue(ERightType.RIGHT_UPDATE_SELLER),"添加卖家评价："+orderId);

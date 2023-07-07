@@ -15,7 +15,10 @@ import com.baling.repository.user.MemberRepository;
 import com.baling.repository.user.UserRepository;
 import com.baling.repository.user.UserTypeRepository;
 import com.baling.util.CommonMethod;
+import com.baling.util.SharedServiceUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
@@ -36,6 +39,9 @@ public class ProfileServiceImpl implements ProfileService{
 
     @Autowired
     RightTypeRepository rightTypeRepository;
+
+    @Autowired
+    SharedServiceUtil sharedServiceUtil;
 
     @Override
     public DataResponse getProfile(DataRequest dataRequest) {
@@ -58,6 +64,7 @@ public class ProfileServiceImpl implements ProfileService{
 
     @Override
     public DataResponse submitProfile(DataRequest dataRequest) {
+        if(!sharedServiceUtil.hasRight(ERightType.RIGHT_CHANGE_PROFILE))return CommonMethod.getReturnMessageError("无修改档案权限");
         Integer userId= CommonMethod.getUserId();
         User user;
         Optional<User> tmp = userRepository.findByUserId(userId);
