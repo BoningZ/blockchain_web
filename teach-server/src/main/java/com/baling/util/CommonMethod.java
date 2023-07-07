@@ -2,12 +2,32 @@ package com.baling.util;
 
 import com.baling.payload.response.DataResponse;
 import com.baling.security.services.UserDetailsImpl;
+import org.bouncycastle.crypto.digests.SM3Digest;
 import org.springframework.security.core.context.SecurityContextHolder;
 
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
 
 public class CommonMethod {
+    public static String dataHash16(String data) {
+        byte[] b_data = data.getBytes(StandardCharsets.UTF_8);
+        byte[] hash_32 = digest(b_data, 0, b_data.length);
+        byte[] hash_16 = new byte[16];
+        System.arraycopy(hash_32, 0, hash_16, 0, 16);
+        return Base64.getEncoder().encodeToString(hash_16);
+    }
+
+
+    public static byte[] digest(byte[] in, int inOff, int len) {
+        SM3Digest sm3 = new SM3Digest();
+        sm3.update(in, inOff, len);
+        byte[] result = new byte[32];
+        sm3.doFinal(result, 0);
+        return result;
+    }
+
     public static DataResponse getReturnData(Object obj, String msg){
         Map data = new HashMap();
         data.put("data",obj);

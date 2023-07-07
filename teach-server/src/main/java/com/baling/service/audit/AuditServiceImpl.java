@@ -15,6 +15,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -69,5 +71,24 @@ public class AuditServiceImpl implements AuditService{
         retMap.put("totalPages",logPage.getTotalPages());
         retMap.put("data",logPage.getContent());
         return CommonMethod.getReturnData(retMap);
+    }
+
+    @Override
+    public ResponseEntity<?> generateHash(Integer logId) {
+        try {
+            Log log=logRepository.getById(logId);
+            log.generateHash();
+            logRepository.save(log);
+            return ResponseEntity.ok("generated");
+        }catch (Exception e){
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
+    }
+
+    @Override
+    public DataResponse audit(Integer logId) {
+        Log log=logRepository.getById(logId);
+        if(log.getHash()==null)return CommonMethod.getReturnMessageError("无杂凑值！");
+        return CommonMethod.getReturnData(log.audit());
     }
 }

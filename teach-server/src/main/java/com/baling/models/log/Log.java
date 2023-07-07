@@ -2,6 +2,8 @@ package com.baling.models.log;
 
 import com.baling.models.right.RightType;
 import com.baling.models.user.User;
+import com.baling.util.CommonMethod;
+import com.sansec.MobileShieldEncInfo;
 import jdk.nashorn.internal.runtime.regexp.joni.constants.OPCode;
 
 import javax.persistence.*;
@@ -34,6 +36,7 @@ public class Log {
 
     private int operateState;
 
+    private String hash;
 
     public Log() {
     }
@@ -43,6 +46,20 @@ public class Log {
         this.rightType = rightType;
         this.description = description;
         this.operateTime=new Date();
+        this.operateState=1;
+        generateHash();
+    }
+
+    public boolean audit(){
+        return this.hash.equals(CommonMethod.dataHash16(getInfo()));
+    }
+
+    public void generateHash(){
+        this.hash= CommonMethod.dataHash16(getInfo());
+    }
+
+    private String getInfo(){
+        return this.id+this.user.getUserId()+this.rightType.getId()+this.description+this.operateTime+this.operateState;
     }
 
     public Integer getId() {
@@ -91,5 +108,10 @@ public class Log {
 
     public void setOperateState(int operateState) {
         this.operateState = operateState;
+        generateHash();
+    }
+
+    public String getHash() {
+        return hash;
     }
 }
