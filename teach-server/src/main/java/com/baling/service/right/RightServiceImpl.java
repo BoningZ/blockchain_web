@@ -91,6 +91,7 @@ public class RightServiceImpl implements RightService{
         Integer userId = CommonMethod.getUserId();
         User user = userRepository.findByUserId(userId).get();
         Log log=new Log(user,rightTypeRepository.getByValue(ERightType.RIGHT_DELETE_RIGHT),"删除权限："+id);
+        logRepository.save(log);
         try {
             rightRepository.deleteById(id);
             log.setOperateState(0);
@@ -109,6 +110,7 @@ public class RightServiceImpl implements RightService{
         User user = userRepository.findByUserId(userId).get();
         Admin admin = adminRepository.getAdminByUser(user);
         Log log=new Log(user,rightTypeRepository.getByValue(ERightType.RIGHT_ADD_RIGHT),"添加权限");
+        logRepository.save(log);
         try {
             Right right = new Right();
             right.setAdmin(admin);
@@ -137,6 +139,7 @@ public class RightServiceImpl implements RightService{
         User user = userRepository.findByUserId(userId).get();
         Admin admin = adminRepository.getAdminByUser(user);
         Log log=new Log(user,rightTypeRepository.getByValue(ERightType.RIGHT_UPDATE_RIGHT),"修改权限");
+        logRepository.save(log);
         try {
             Right right = rightRepository.getById(dataRequest.getInteger("id"));
 

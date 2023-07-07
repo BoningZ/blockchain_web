@@ -69,6 +69,7 @@ public class AuthServiceImpl implements AuthService{
         Optional<User> fakeUser = userRepository.findByUsername(loginRequest.getUsername());
         if(fakeUser.isPresent()){
             log=new Log(fakeUser.get(),rightTypeRepository.getByValue(ERightType.valueOf("RIGHT_LOGIN")),"尝试登录");
+            logRepository.save(log);
             log.setOperateState(1);
             logRepository.save(log);
         }
@@ -157,6 +158,7 @@ public class AuthServiceImpl implements AuthService{
         String newPassword = dataRequest.getString("newPassword");
         User u = userRepository.findById(userId).get();
         Log log=new Log(u,rightTypeRepository.getByValue(ERightType.valueOf("RIGHT_CHANGE_PASSWORD")),"修改密码");
+        logRepository.save(log);
         if(!encoder.matches(oldPassword, u.getPassword())) {
             log.setOperateState(1);
             logRepository.save(log);

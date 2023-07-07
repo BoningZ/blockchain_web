@@ -6,6 +6,7 @@ import com.baling.payload.response.DataResponse;
 import com.baling.service.audit.AuditService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
@@ -28,6 +29,16 @@ public class AuditController {
                                    @RequestParam(value = "userId",required = false) Integer userId,
                                    @RequestParam("page") int page){
         return auditService.searchLogs(rightTypes,maxLevel,startTime,endTime,operateState,description,userId,page);
+    }
+
+    @PutMapping("/generateHash")
+    public ResponseEntity<?> generateHash(@RequestParam("logId")Integer logId){
+        return auditService.generateHash(logId);
+    }
+
+    @GetMapping("/audit")
+    public DataResponse audit(@RequestParam("logId")Integer logId){
+        return auditService.audit(logId);
     }
 
 }

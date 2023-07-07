@@ -70,6 +70,7 @@ public class ProfileServiceImpl implements ProfileService{
         Optional<User> tmp = userRepository.findByUserId(userId);
         user = tmp.get();
         Log log=new Log(user,rightTypeRepository.getByValue(ERightType.RIGHT_CHANGE_PROFILE),"修改档案");
+        logRepository.save(log);
         log.setOperateState(1);
         logRepository.save(log);
         if(user.getUserType().getName()== EUserType.ROLE_ADMIN){

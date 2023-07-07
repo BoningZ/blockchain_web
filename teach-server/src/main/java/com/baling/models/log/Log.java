@@ -46,8 +46,6 @@ public class Log {
         this.rightType = rightType;
         this.description = description;
         this.operateTime=new Date();
-        this.operateState=1;
-        generateHash();
     }
 
     public boolean audit(){
@@ -59,7 +57,7 @@ public class Log {
     }
 
     private String getInfo(){
-        return this.id+this.user.getUserId()+this.rightType.getId()+this.description+this.operateTime+this.operateState;
+        return this.id+this.user.getUserId()+this.rightType.getId()+this.description+this.operateTime.getTime()+this.operateState;
     }
 
     public Integer getId() {

@@ -71,6 +71,7 @@ public class UserRightServiceImpl implements UserRightService{
     @Transactional
     public ResponseEntity<?> deleteMember(Integer memberId, Integer rightId) {
         Log log=new Log(getCurrentUser(),rightTypeRepository.getByValue(ERightType.RIGHT_WARRANT),"去除权限");
+        logRepository.save(log);
         try{
             Member member=memberRepository.getById(memberId);
             Right right=rightRepository.getById(rightId);
@@ -89,6 +90,7 @@ public class UserRightServiceImpl implements UserRightService{
     @Override
     public ResponseEntity<?> addMember(Integer memberId, Integer rightId) {
         Log log=new Log(getCurrentUser(),rightTypeRepository.getByValue(ERightType.RIGHT_WARRANT),"添加权限");
+        logRepository.save(log);
         try{
             Member member=memberRepository.getById(memberId);
             Right right=rightRepository.getById(rightId);

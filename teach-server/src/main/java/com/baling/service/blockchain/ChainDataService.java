@@ -7,11 +7,12 @@ import org.springframework.http.ResponseEntity;
 public interface ChainDataService {
     DataResponse getTxnById(String id);
     DataResponse getTxnHistoryById(String id);
-    DataResponse searchTxs(String startDateTime,String endDateTime,String buyerId,String sellerId,String logisticsStatus,String orderStatus);
+    DataResponse searchTxs(DataRequest dataRequest);
     ResponseEntity<?> createTxn(DataRequest dataRequest);
     ResponseEntity<?> updateTxn(DataRequest dataRequest);
     ResponseEntity<?> deleteTxn(String id);
     ResponseEntity<?> updateLogistics(DataRequest dataRequest);
     ResponseEntity<?> addBuyerReview(DataRequest dataRequest);
     ResponseEntity<?> addSellerReview(DataRequest dataRequest);
+    DataResponse decryptName(String encrypted);
 }

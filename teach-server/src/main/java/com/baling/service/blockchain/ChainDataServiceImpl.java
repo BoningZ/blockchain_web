@@ -13,6 +13,7 @@ import com.baling.sdk.UserContext;
 import com.baling.sdk.UserUtils;
 import com.baling.util.CommonMethod;
 import com.baling.util.SharedServiceUtil;
+import com.sansec.MobileShieldEncInfo;
 import org.bouncycastle.crypto.CryptoException;
 import org.hyperledger.fabric.sdk.Enrollment;
 import org.hyperledger.fabric.sdk.Orderer;
@@ -60,6 +61,7 @@ public class ChainDataServiceImpl implements ChainDataService{
         if(!sharedServiceUtil.hasRight(ERightType.RIGHT_QUERY))return CommonMethod.getReturnMessageError("无查询权限！");
         String[] initArgs={id};
         Log log=new Log(getCurrentUser(),rightTypeRepository.getByValue(ERightType.RIGHT_QUERY),"查询交易，编号："+id);
+        logRepository.save(log);
         try {
             String JSONString= search("getOrder",initArgs);
             log.setOperateState(0);
@@ -77,8 +79,9 @@ public class ChainDataServiceImpl implements ChainDataService{
         if(!sharedServiceUtil.hasRight(ERightType.RIGHT_QUERY_HISTORY))return CommonMethod.getReturnMessageError("无查询历史权限！");
         String[] initArgs={id};
         Log log=new Log(getCurrentUser(),rightTypeRepository.getByValue(ERightType.RIGHT_QUERY_HISTORY),"查询交易历史，编号："+id);
+        logRepository.save(log);
         try {
-            String JSONString= search("getOrderHistory",initArgs);
+            String JSONString= "["+search("getOrderHistory",initArgs)+"]";//适应统一搜索接口，放到数组里
             log.setOperateState(0);
             logRepository.save(log);
             return CommonMethod.getReturnData(new JSONParser().parse(JSONString));
@@ -90,10 +93,15 @@ public class ChainDataServiceImpl implements ChainDataService{
     }
 
     @Override
-    public DataResponse searchTxs(String startDateTime, String endDateTime, String buyerId, String sellerId, String logisticsStatus, String orderStatus) {
+    public DataResponse searchTxs(DataRequest dataRequest) {
+        String startDateTime=dataRequest.getString("startDateTime"), endDateTime=dataRequest.getString("endDateTime");
+        String buyerId=dataRequest.getString("buyerId"), sellerId=dataRequest.getString("sellerId");
+        String logisticsStatus=dataRequest.getString("logisticsStatus");
+        String orderStatus=dataRequest.getString("orderStatus");
         if(!sharedServiceUtil.hasRight(ERightType.RIGHT_QUERY))return CommonMethod.getReturnMessageError("无查询权限！");
         String[] initArgs={startDateTime,endDateTime,buyerId,sellerId,logisticsStatus,orderStatus};
         Log log=new Log(getCurrentUser(),rightTypeRepository.getByValue(ERightType.RIGHT_QUERY),"搜索交易");
+        logRepository.save(log);
         try {
             String JSONString= search("searchOrders",initArgs);
             log.setOperateState(0);
@@ -116,10 +124,13 @@ public class ChainDataServiceImpl implements ChainDataService{
 //        OrderTime    string  `json:"orderTime"`
 //        BuyerID      string  `json:"buyerId"`
 //        SellerID     string  `json:"sellerId"`
-        String[] initArgs={dataRequest.getString("orderId"),dataRequest.getString("name"),dataRequest.getString("quantity"),
+        String name=dataRequest.getString("name");
+        if(dataRequest.getBoolean("encrypt"))name= MobileShieldEncInfo.encrypt(name);
+        String[] initArgs={dataRequest.getString("orderId"),name,dataRequest.getString("quantity"),
                             dataRequest.getString("amount"),dataRequest.getString("orderTime"),
                             dataRequest.getString("buyerId"),dataRequest.getString("sellerId")};
         Log log=new Log(getCurrentUser(),rightTypeRepository.getByValue(ERightType.RIGHT_ADD),"创建交易");
+        logRepository.save(log);
         try{
             invoke("createOrder",initArgs);
             log.setOperateState(0);
@@ -138,6 +149,7 @@ public class ChainDataServiceImpl implements ChainDataService{
         String orderId=dataRequest.getString("orderId"), status=dataRequest.getString("status");
         String[] initArgs={orderId,status};
         Log log=new Log(getCurrentUser(),rightTypeRepository.getByValue(ERightType.RIGHT_UPDATE_STATUS),"修改交易："+orderId+" 为状态："+status);
+        logRepository.save(log);
         try{
             invoke("updateOrder",initArgs);
             log.setOperateState(0);
@@ -155,6 +167,7 @@ public class ChainDataServiceImpl implements ChainDataService{
         if(!sharedServiceUtil.hasRight(ERightType.RIGHT_DELETE))return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("无删除权限");
         String[] initArgs={id};
         Log log=new Log(getCurrentUser(),rightTypeRepository.getByValue(ERightType.RIGHT_DELETE),"删除交易："+id);
+        logRepository.save(log);
         try{
             invoke("deleteOrder",initArgs);
             log.setOperateState(0);
@@ -173,6 +186,7 @@ public class ChainDataServiceImpl implements ChainDataService{
         String orderId=dataRequest.getString("orderId"), status=dataRequest.getString("status");
         String[] initArgs={orderId,status};
         Log log=new Log(getCurrentUser(),rightTypeRepository.getByValue(ERightType.RIGHT_UPDATE_LOGISTICS),"修改交易："+orderId+"物流状态为："+status);
+        logRepository.save(log);
         try{
             invoke("updateLogistics",initArgs);
             log.setOperateState(0);
@@ -191,6 +205,7 @@ public class ChainDataServiceImpl implements ChainDataService{
         String orderId=dataRequest.getString("orderId");
         String[] initArgs={orderId,dataRequest.getString("buyerReview")};
         Log log=new Log(getCurrentUser(),rightTypeRepository.getByValue(ERightType.RIGHT_UPDATE_BUYER),"添加买家评价："+orderId);
+        logRepository.save(log);
         try{
             invoke("addBuyerReview",initArgs);
             log.setOperateState(0);
@@ -209,6 +224,7 @@ public class ChainDataServiceImpl implements ChainDataService{
         String orderId=dataRequest.getString("orderId");
         String[] initArgs={dataRequest.getString("orderId"),dataRequest.getString("sellerReview")};
         Log log=new Log(getCurrentUser(),rightTypeRepository.getByValue(ERightType.RIGHT_UPDATE_SELLER),"添加卖家评价："+orderId);
+        logRepository.save(log);
         try{
             invoke("addSellerReview",initArgs);
             log.setOperateState(0);
@@ -218,6 +234,15 @@ public class ChainDataServiceImpl implements ChainDataService{
             log.setOperateState(1);
             logRepository.save(log);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
+    }
+
+    @Override
+    public DataResponse decryptName(String encrypted) {
+        try {
+            return CommonMethod.getReturnData(MobileShieldEncInfo.decrypt(encrypted));
+        }catch (Exception e){
+            return CommonMethod.getReturnMessageError("当前名称未加密！");
         }
     }
 
