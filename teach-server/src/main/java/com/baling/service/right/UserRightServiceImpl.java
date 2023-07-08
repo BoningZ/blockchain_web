@@ -142,7 +142,8 @@ public class UserRightServiceImpl implements UserRightService{
     public DataResponse getRightsByMember(Integer memberId) {
         List<Right> rights=new ArrayList<>();
         for(UserRight ur:userRightRepository.getUserRightsByMember(memberRepository.getById(memberId))){
-            rights.add(ur.getRight());
+            if(ur.getRight().getAdmin().getUser().equals(getCurrentUser()))
+                rights.add(ur.getRight());
         }
         return CommonMethod.getReturnData(rights);
     }
