@@ -151,6 +151,8 @@ public class UserRightServiceImpl implements UserRightService{
     @Override
     @Transactional
     public ResponseEntity<?> updateRightsForMember(DataRequest dataRequest) {
+        Log log=new Log(getCurrentUser(),rightTypeRepository.getByValue(ERightType.RIGHT_WARRANT),"添加权限");
+        logRepository.save(log);
         try {
             Integer memberId = dataRequest.getInteger("memberId");
             Member member = memberRepository.getById(memberId);
@@ -161,7 +163,7 @@ public class UserRightServiceImpl implements UserRightService{
                 if (right.getAdmin().getUser().equals(getCurrentUser())) {
                     originalRightIds.add(right.getId());
                     if (!rightIds.contains(right.getId()))
-                        rightRepository.deleteById(right.getId());
+                        userRightRepository.deleteById(ur.getId());
                 }
             }
             for (Integer rightId : rightIds) {
@@ -171,8 +173,13 @@ public class UserRightServiceImpl implements UserRightService{
                     userRightRepository.save(ur);
                 }
             }
+            log.setDescription("更新用户："+member.getName()+" 权限");
+            log.setOperateState(0);
+            logRepository.save(log);
             return ResponseEntity.ok("updated");
         }catch (Exception e){
+            log.setOperateState(1);
+            logRepository.save(log);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
     }

@@ -50,9 +50,9 @@ public class UserRightController {
     }
 
     /**
-     * 查询成员具有的权限列表，只包括当前登录用户创建的权限
+     * 查询某成员具有的权限列表，只包括当前登录管理员创建的权限
      * @param memberId 要查询的成员Id
-     * @return 该用户具有的、当前登录用户创建的权限列表
+     * @return 该成员具有的、当前登录用户创建的权限列表
      */
     @GetMapping("/getRightsByMember")
     public DataResponse getRightsByMember(@RequestParam("memberId")Integer memberId){
@@ -70,9 +70,9 @@ public class UserRightController {
     }
 
     /**
-     * 获取“成员-自己创建的权限集"列表
+     * 获取“成员-当前登录管理员创建的权限集"列表
      * @param page 第几页
-     * @return “成员-自己创建的权限集"列表
+     * @return “成员-权限集"列表
      */
     @GetMapping("/getRightsOfAll")
     public DataResponse getRightsOfAll(@RequestParam("page")Integer page){
