@@ -63,6 +63,7 @@ public class AuditServiceImpl implements AuditService{
                 rightTypes.add(rightType);
         }
 
+        if(description==null)description="";
 
         Sort sort = Sort.by(Sort.Direction.ASC, "id");
         Pageable pageable = PageRequest.of(page, 50, sort);

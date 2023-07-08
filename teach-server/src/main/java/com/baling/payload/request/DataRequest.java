@@ -1,5 +1,6 @@
 package com.baling.payload.request;
 
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class DataRequest {
@@ -103,11 +104,23 @@ public class DataRequest {
         }
     }
     public Date getDate(String key) {
+        SimpleDateFormat dateFormat1 = new SimpleDateFormat("yyyy-MM-dd");
+        SimpleDateFormat dateFormat2 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
         Object obj = data.get(key);
         if(obj == null)
             return null;
-        if(obj instanceof Date)
-            return (Date)obj;
+        if(obj instanceof String){
+            try{
+                try{
+                    return dateFormat1.parse((String) obj);
+                }catch (Exception e){
+                    return dateFormat2.parse((String) obj);
+                }
+            }catch (Exception e){
+                return null;
+            }
+        }
+
         else
             return null;
     }
