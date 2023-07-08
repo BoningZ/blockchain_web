@@ -4,6 +4,7 @@ import com.baling.models.log.Log;
 import com.baling.models.right.ERightType;
 import com.baling.models.right.RightType;
 import com.baling.models.user.User;
+import com.baling.payload.request.DataRequest;
 import com.baling.payload.response.DataResponse;
 import com.baling.repository.log.LogRepository;
 import com.baling.repository.right.RightTypeRepository;
@@ -33,7 +34,15 @@ public class AuditServiceImpl implements AuditService{
     RightTypeRepository rightTypeRepository;
 
     @Override
-    public DataResponse searchLogs(List<String> rightTypeNames, Integer maxLevel, Date startTime, Date endTime, Integer operateState, String description, Integer userId, int page) {
+    public DataResponse searchLogs(DataRequest dataRequest) {
+        List<String> rightTypeNames=(List<String>) dataRequest.getList("rightTypeNames");
+        Integer maxLevel=dataRequest.getInteger("maxLevel");
+        Date startTime=dataRequest.getDate("startTime"), endTime=dataRequest.getDate("endTime");
+        Integer operateState=dataRequest.getInteger("operateState");
+        String description=dataRequest.getString("description");
+        Integer userId=dataRequest.getInteger("userId");
+        Integer page=dataRequest.getInteger("page");
+
         User u=null;
         if(userId!=null)u=userRepository.findByUserId(userId).get();
 

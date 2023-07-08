@@ -10,10 +10,7 @@ import java.util.List;
 
 
 public interface AuditService {
-    DataResponse searchLogs(List<String> rightTypes, Integer maxLevel,
-                            Date startTime,Date endTime,
-                            Integer operateState,String description,Integer userId,
-                            int page);
+    DataResponse searchLogs(DataRequest dataRequest);
     ResponseEntity<?> generateHash(Integer logId);
     DataResponse audit(Integer logId);
 

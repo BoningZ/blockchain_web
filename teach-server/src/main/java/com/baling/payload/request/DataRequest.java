@@ -103,7 +103,13 @@ public class DataRequest {
         }
     }
     public Date getDate(String key) {
-        return null;
+        Object obj = data.get(key);
+        if(obj == null)
+            return null;
+        if(obj instanceof Date)
+            return (Date)obj;
+        else
+            return null;
     }
     public Date getTime(String key) {
         return null;
