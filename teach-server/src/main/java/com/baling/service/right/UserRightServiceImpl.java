@@ -3,8 +3,10 @@ package com.baling.service.right;
 import com.baling.models.log.Log;
 import com.baling.models.right.ERightType;
 import com.baling.models.right.Right;
+import com.baling.models.right.RightType;
 import com.baling.models.right.UserRight;
 import com.baling.models.user.*;
+import com.baling.payload.request.DataRequest;
 import com.baling.payload.response.DataResponse;
 import com.baling.repository.log.LogRepository;
 import com.baling.repository.right.RightTypeRepository;
@@ -123,6 +125,77 @@ public class UserRightServiceImpl implements UserRightService{
         retMap.put("totalPages",rightPage.getTotalPages());
         retMap.put("data",rights);
         return CommonMethod.getReturnData(retMap);
+    }
+
+    @Override
+    public DataResponse getMyRightTypes() {
+        Member member=memberRepository.getMemberByUser(getCurrentUser());
+        List<UserRight> userRights=userRightRepository.getUserRightsByMember(member);
+        Set<RightType> typeSet=new HashSet<>();
+        for(UserRight ur:userRights){
+            typeSet.addAll(ur.getRight().getRightTypes());
+        }
+        return CommonMethod.getReturnData(typeSet);
+    }
+
+    @Override
+    public DataResponse getRightsByMember(Integer memberId) {
+        List<Right> rights=new ArrayList<>();
+        for(UserRight ur:userRightRepository.getUserRightsByMember(memberRepository.getById(memberId))){
+            rights.add(ur.getRight());
+        }
+        return CommonMethod.getReturnData(rights);
+    }
+
+    @Override
+    @Transactional
+    public ResponseEntity<?> updateRightsForMember(DataRequest dataRequest) {
+        try {
+            Integer memberId = dataRequest.getInteger("memberId");
+            Member member = memberRepository.getById(memberId);
+            List<Integer> rightIds = (List<Integer>) dataRequest.getList("rightIds");
+            List<Integer> originalRightIds = new ArrayList<>();
+            for (UserRight ur : userRightRepository.getUserRightsByMember(memberRepository.getById(memberId))) {
+                Right right = ur.getRight();
+                if (right.getAdmin().getUser().equals(getCurrentUser())) {
+                    originalRightIds.add(right.getId());
+                    if (!rightIds.contains(right.getId()))
+                        rightRepository.deleteById(right.getId());
+                }
+            }
+            for (Integer rightId : rightIds) {
+                if (!originalRightIds.contains(rightId)) {
+                    Right right = rightRepository.getById(rightId);
+                    UserRight ur = new UserRight(member, right);
+                    userRightRepository.save(ur);
+                }
+            }
+            return ResponseEntity.ok("updated");
+        }catch (Exception e){
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
+    }
+
+    @Override
+    public DataResponse getRightsOfAll(int page) {
+        List<Map> retList=new ArrayList<>();
+
+        Sort sort = Sort.by(Sort.Direction.ASC, "id");
+        Pageable pageable = PageRequest.of(page, 50, sort);
+        List<Member> members=memberRepository.getMemberPageBy(pageable).getContent();
+
+        for(Member member:members){
+            Map m=new HashMap();
+            m.put("member",member);
+            List<Right> rights=new ArrayList<>();
+            for(UserRight ur:userRightRepository.getUserRightsByMember(member)){
+                if(ur.getRight().getAdmin().getUser().equals(getCurrentUser()))
+                    rights.add(ur.getRight());
+            }
+            m.put("rights",rights);
+            retList.add(m);
+        }
+        return CommonMethod.getReturnData(retList);
     }
 
     private User getCurrentUser(){

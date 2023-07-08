@@ -1,11 +1,13 @@
 package com.baling.controllers.right;
 
+import com.baling.payload.request.DataRequest;
 import com.baling.payload.response.DataResponse;
 import com.baling.service.right.UserRightService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.relational.core.sql.In;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
@@ -32,5 +34,25 @@ public class UserRightController {
     @GetMapping("/getMemberRights")
     public DataResponse getMemberRights(@RequestParam("page")int page){
         return userRightService.getMemberRights(page);
+    }
+
+    @GetMapping("/getMyRightTypes")
+    public DataResponse getMyRightTypes(){
+        return userRightService.getMyRightTypes();
+    }
+
+    @GetMapping("/getRightsByMember")
+    public DataResponse getRightsByMember(@RequestParam("memberId")Integer memberId){
+        return userRightService.getRightsByMember(memberId);
+    }
+
+    @PutMapping("/updateRightsByMember")
+    public ResponseEntity<?> updateRightsByMember(@Valid @RequestBody DataRequest dataRequest){
+        return userRightService.updateRightsForMember(dataRequest);
+    }
+
+    @GetMapping("/getRightsOfAll")
+    public DataResponse getRightsOfAll(@RequestParam("page")Integer page){
+        return userRightService.getRightsOfAll(page);
     }
 }
