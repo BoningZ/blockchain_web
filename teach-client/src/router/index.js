@@ -45,6 +45,31 @@ const routes = [
     component:() => import('@/views/Register.vue')
   },
   {
+    path:'/RightManage',
+    name:'RightManage',
+    component:() => import('@/views/dashboard/RightManage.vue')
+  },
+  {
+    path:'/UserLog',
+    name:'UserLog',
+    component:() => import('@/views/dashboard/UserLog.vue')
+  },
+  {
+    path:'/UserProfile',
+    name:'UserProfile',
+    component:() => import('@/views/profile/UserProfile.vue')
+  },
+  {
+    path:'/EditProfile',
+    name:'EditProfile',
+    component:() => import('@/views/profile/EditProfile.vue')
+  },
+  {
+    path:'/SearchOrder',
+    name:'SearchOrder',
+    component:() => import('@/views/fabric/SearchOrder.vue')
+  },
+  {
     path:'/AdminProfile',
     name:'AdminProfile',
     component:AdminProfile

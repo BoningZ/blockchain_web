@@ -120,7 +120,6 @@ public class DataRequest {
                 return null;
             }
         }
-
         else
             return null;
     }
