@@ -11,7 +11,7 @@ import java.util.List;
 
 public interface AuditService {
     DataResponse searchLogs(DataRequest dataRequest);
-    ResponseEntity<?> generateHash(Integer logId);
+    ResponseEntity<?> generateHash(DataRequest dataRequest);
     DataResponse audit(Integer logId);
 
 

@@ -17,6 +17,11 @@ public class InfoController {
         return infoService.getRightTypeList();
     }
 
+    @GetMapping("/getAllRightTypeList")
+    public DataResponse getAllRightTypeList(){
+        return infoService.getAllRightTypeList();
+    }
+
     @GetMapping("/getMemberList")
     public DataResponse getMemberList(@RequestParam("condition")String condition){
         return infoService.getMemberList(condition);

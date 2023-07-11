@@ -27,8 +27,8 @@ public class AuditController {
     }
 
     @PutMapping("/generateHash")
-    public ResponseEntity<?> generateHash(@RequestParam("logId")Integer logId){
-        return auditService.generateHash(logId);
+    public ResponseEntity<?> generateHash(@Valid @RequestBody DataRequest dataRequest){
+        return auditService.generateHash(dataRequest);
     }
 
     @GetMapping("/audit")

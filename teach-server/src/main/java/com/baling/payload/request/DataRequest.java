@@ -1,5 +1,7 @@
 package com.baling.payload.request;
 
+import org.apache.commons.lang3.time.DateUtils;
+
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -112,9 +114,10 @@ public class DataRequest {
         if(obj instanceof String){
             try{
                 try{
-                    return dateFormat1.parse((String) obj);
+                    //vue的奇妙bug
+                    return addOneDay(dateFormat1.parse((String) obj));
                 }catch (Exception e){
-                    return dateFormat2.parse((String) obj);
+                    return addOneDay(dateFormat2.parse((String) obj));
                 }
             }catch (Exception e){
                 return null;
@@ -122,6 +125,10 @@ public class DataRequest {
         }
         else
             return null;
+    }
+
+    private Date addOneDay(Date date){
+        return DateUtils.truncate(DateUtils.addDays(date, 1), Calendar.DATE);
     }
     public Date getTime(String key) {
         return null;

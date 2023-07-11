@@ -66,7 +66,7 @@ public class AuditServiceImpl implements AuditService{
         if(description==null)description="";
 
         Sort sort = Sort.by(Sort.Direction.ASC, "id");
-        Pageable pageable = PageRequest.of(page, 50, sort);
+        Pageable pageable = PageRequest.of(page, 15, sort);
 
         Page<Log> logPage;
         if(u!=null&&operateState!=null)
@@ -84,8 +84,9 @@ public class AuditServiceImpl implements AuditService{
     }
 
     @Override
-    public ResponseEntity<?> generateHash(Integer logId) {
+    public ResponseEntity<?> generateHash(DataRequest dataRequest) {
         try {
+            int logId=dataRequest.getInteger("logId");
             Log log=logRepository.getById(logId);
             log.generateHash();
             logRepository.save(log);
