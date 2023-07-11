@@ -2,6 +2,8 @@ package com.baling.service.info;
 
 import com.baling.payload.response.DataResponse;
 import com.baling.repository.right.RightTypeRepository;
+import com.baling.repository.status.LogisticsStatusRepository;
+import com.baling.repository.status.OrderStatusRepository;
 import com.baling.repository.user.MemberRepository;
 import com.baling.util.CommonMethod;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +15,10 @@ public class InfoServiceImpl implements InfoService{
     RightTypeRepository rightTypeRepository;
     @Autowired
     MemberRepository memberRepository;
+    @Autowired
+    LogisticsStatusRepository logisticsStatusRepository;
+    @Autowired
+    OrderStatusRepository orderStatusRepository;
     @Override
     public DataResponse getRightTypeList() {
         return CommonMethod.getReturnData(rightTypeRepository.getRightTypesByAdminOnly(false));
@@ -26,5 +32,15 @@ public class InfoServiceImpl implements InfoService{
     @Override
     public DataResponse getMemberList(String condition) {
         return CommonMethod.getReturnData(memberRepository.getMembersByMidLikeOrNameLike("%"+condition+"%","%"+condition+"%"));
+    }
+
+    @Override
+    public DataResponse getLogisticsStatus() {
+        return CommonMethod.getReturnData(logisticsStatusRepository.getAllBy());
+    }
+
+    @Override
+    public DataResponse getOrderStatus() {
+        return CommonMethod.getReturnData(orderStatusRepository.getAllBy());
     }
 }

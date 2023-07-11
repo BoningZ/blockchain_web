@@ -8,7 +8,16 @@ function getAllRightList(){
     return getRequest('/api/info/getAllRightTypeList',null)
 }
 
+function getLogisticsList(){
+    return getRequest('/api/info/getLogisticsStatus',null)
+}
+function getOrderStatusList(){
+    return getRequest('/api/info/getOrderStatus',null)
+}
+
 export {
     getBasicRightList,
-    getAllRightList
+    getAllRightList,
+    getLogisticsList,
+    getOrderStatusList
 }

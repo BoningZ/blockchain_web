@@ -9,4 +9,8 @@ public interface InfoService {
     DataResponse getAllRightTypeList();
 
     DataResponse getMemberList(String condition);
+
+    DataResponse getLogisticsStatus();
+
+    DataResponse getOrderStatus();
 }

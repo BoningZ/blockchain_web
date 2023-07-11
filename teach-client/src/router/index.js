@@ -67,7 +67,7 @@ const routes = [
   {
     path:'/SearchOrder',
     name:'SearchOrder',
-    component:() => import('@/views/fabric/SearchOrder.vue')
+    component:() => import('@/views/dashboard/SearchOrder.vue')
   },
   {
     path:'/AdminProfile',

@@ -31,8 +31,9 @@
           </div>
           <h1></h1>
           <div>
-            <el-button v-if="v" type="info" @click="changef">加密</el-button>&nbsp;
-            <el-button v-else type="success" @click="changet">加密</el-button>&nbsp;
+            <el-switch v-model="v"  style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949"
+                       active-text="加密"
+                       inactive-text="不加密"/>
           </div>
         <template #footer>
           <span class="dialog-footer">
@@ -63,12 +64,6 @@
         }
       },
       methods:{
-         changef(){
-            this.v=false
-         },
-         changet(){
-            this.v=true
-         }
       },
       setup(props, ctx) {
 
@@ -124,7 +119,7 @@
          si,
          oi,
          na,
-         bi,
+         buyerId,
          vis
         }
       }

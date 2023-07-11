@@ -26,4 +26,12 @@ public class InfoController {
     public DataResponse getMemberList(@RequestParam("condition")String condition){
         return infoService.getMemberList(condition);
     }
+    @GetMapping("/getLogisticsStatus")
+    public DataResponse getLogisticsStatus(){
+        return infoService.getLogisticsStatus();
+    }
+    @GetMapping("/getOrderStatus")
+    public DataResponse getOrderStatus(){
+        return infoService.getOrderStatus();
+    }
 }

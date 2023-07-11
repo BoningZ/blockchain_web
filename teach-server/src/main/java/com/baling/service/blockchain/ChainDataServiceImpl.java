@@ -36,10 +36,8 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 @Service
 public class ChainDataServiceImpl implements ChainDataService{
@@ -99,6 +97,10 @@ public class ChainDataServiceImpl implements ChainDataService{
         String logisticsStatus=dataRequest.getString("logisticsStatus");
         String orderStatus=dataRequest.getString("orderStatus");
         if(!sharedServiceUtil.hasRight(ERightType.RIGHT_QUERY))return CommonMethod.getReturnMessageError("无查询权限！");
+
+        if(endDateTime==null)endDateTime="";
+        if(startDateTime==null)startDateTime="";
+
         String[] initArgs={startDateTime,endDateTime,buyerId,sellerId,logisticsStatus,orderStatus};
         Log log=new Log(getCurrentUser(),rightTypeRepository.getByValue(ERightType.RIGHT_QUERY),"搜索交易");
         logRepository.save(log);
@@ -127,7 +129,7 @@ public class ChainDataServiceImpl implements ChainDataService{
         String name=dataRequest.getString("name");
         if(dataRequest.getBoolean("encrypt"))name= MobileShieldEncInfo.encrypt(name);
         String[] initArgs={dataRequest.getString("orderId"),name,dataRequest.getString("quantity"),
-                            dataRequest.getString("amount"),dataRequest.getString("orderTime"),
+                            dataRequest.getString("amount"),formatDate(dataRequest.getDate("orderTime")),
                             dataRequest.getString("buyerId"),dataRequest.getString("sellerId")};
         Log log=new Log(getCurrentUser(),rightTypeRepository.getByValue(ERightType.RIGHT_ADD),"创建交易");
         logRepository.save(log);
@@ -183,7 +185,7 @@ public class ChainDataServiceImpl implements ChainDataService{
     @Override
     public ResponseEntity<?> updateLogistics(DataRequest dataRequest) {
         if(!sharedServiceUtil.hasRight(ERightType.RIGHT_UPDATE_LOGISTICS))return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("无更改物流状态权限");
-        String orderId=dataRequest.getString("orderId"), status=dataRequest.getString("status");
+        String orderId=dataRequest.getString("orderId"), status=dataRequest.getString("logistics");
         String[] initArgs={orderId,status};
         Log log=new Log(getCurrentUser(),rightTypeRepository.getByValue(ERightType.RIGHT_UPDATE_LOGISTICS),"修改交易："+orderId+"物流状态为："+status);
         logRepository.save(log);
@@ -278,6 +280,12 @@ public class ChainDataServiceImpl implements ChainDataService{
         peers.add(peer1);
         return peers;
     }
+
+    private String formatDate(Date date){
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy.MM.dd");
+        return sdf.format(date);
+    }
+
 
     private User getCurrentUser(){
         Integer userId = CommonMethod.getUserId();

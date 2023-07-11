@@ -121,15 +121,16 @@
         </el-form>
         <el-table
             :data="members"
-            style="width: 100%">
-          <el-table-column label="操作">
+            style="width: 100%"
+            height="500">
+          <el-table-column label="操作" width="120">
             <template #default="scope">
               <el-button v-if="scope.row.editable" link type="success" @click="saveMember(scope.row)">确认</el-button>
               <el-button v-else link type="primary" @click="editMember(scope.row)">编辑</el-button>
             </template>
           </el-table-column>
-          <el-table-column prop="name" label="姓名"></el-table-column>
-          <el-table-column prop="mid" label="工号"></el-table-column>
+          <el-table-column prop="name" label="姓名" width="120"></el-table-column>
+          <el-table-column prop="mid" label="工号" width="120"></el-table-column>
           <el-table-column label="拥有权限" >
             <template #default="scope">
               <div v-if="scope.row.editable">
@@ -199,8 +200,8 @@ export default {
         result.set(id, label);
         return result;
       }, new Map());
+      this.searchRightTable()
     })
-    this.searchRightTable()
     this.getRightsMap()
     this.searchMemberTable()
   },
@@ -255,6 +256,7 @@ export default {
         ElMessage.success(res)
         this.searchRightTable()
         this.newRightVisible=false
+        this.getRightsMap()
       })
     },
     handleMenuSelect(index) {

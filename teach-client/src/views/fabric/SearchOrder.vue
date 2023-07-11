@@ -16,45 +16,41 @@
     <create v-model:visible="p"/>
      <his v-model:visible="v" :orderId="msg"/>
   </div>
+  <h2>订单管理</h2>
   <div >
      <el-button type="primary" @click="dk">添加</el-button>
-     <el-button v-if="isd" type="info" >批量删除</el-button>&nbsp;
+     <el-button v-if="notSelected" type="info" >批量删除</el-button>&nbsp;
      <el-button v-else type="danger" @click="mude">批量删除</el-button>&nbsp;
-     <el-input v-model="input" placeholder="单号" style="width: 150px"/>&nbsp;
+     <el-input v-model="orderId" placeholder="单号" style="width: 150px"/>&nbsp;
      <el-date-picker v-model="time" type="daterange"
-     range-separator="至" start-placeholder="开始日期"
-     value-format="YYYY-MM-DD"
-     end-placeholder="结束日期">
+       range-separator="至" start-placeholder="开始日期"
+       value-format="YYYY-MM-DD"
+       end-placeholder="结束日期">
      </el-date-picker> &nbsp;
-     <el-input v-model="si" placeholder="卖家id" style="width: 150px"/>&nbsp;
-     <el-input v-model="bi" placeholder="买家id" style="width: 150px"/>&nbsp;
-     <el-input v-model="wl" placeholder="物流" style="width: 80px"/>&nbsp;
-     <el-input v-model="st" placeholder="交易状态" style="width: 80px"/>&nbsp;
+     <el-input v-model="sellerId" placeholder="卖家id" style="width: 150px"/>&nbsp;
+     <el-input v-model="buyerId" placeholder="买家id" style="width: 150px"/>&nbsp;
+     <el-input v-model="logisticStatus" placeholder="物流" style="width: 80px"/>&nbsp;
+     <el-input v-model="orderStatus" placeholder="交易状态" style="width: 80px"/>&nbsp;
      <el-button type="primary" @click="SearchOrder">搜索</el-button>
   </div>
       <el-main>
-      <el-table :data="tableData"  height="680px" style="width: 80%" @selection-change="handleSelectionChange">
-      <el-table-column  width="80" type="selection"></el-table-column>
-      <el-table-column  label="卖家id"  prop="sellerId"  width="150">
-      </el-table-column>
-      <el-table-column  label="交易id"  prop="orderId"  width="150">
-      </el-table-column>
-      <el-table-column  label="买家id"  prop="buyerId"  width="150">
-      </el-table-column>
-      <el-table-column  label="状态"  prop="status"  width="90" >
-      </el-table-column>
-      <el-table-column label="操作" width="300" >
-        <template #default="{ row }">
-          <div>
-          <el-button size="small" type="primary" @click="open(row)">详细信息</el-button>
-          <el-button size="small" type="success" @click="history(row)">历史记录</el-button>
-          <el-button size="small" type="danger" @click="handleDel(row)">删除</el-button>
-          </div>
-      </template>
-      </el-table-column>
-    </el-table>
+        <el-table :data="tableData"  height="680px"  @selection-change="handleSelectionChange">
+          <el-table-column  width="80" type="selection"/>
+          <el-table-column  label="卖家id"  prop="sellerId"  width="150"/>
+          <el-table-column  label="交易id"  prop="orderId"  width="150"/>
+          <el-table-column  label="买家id"  prop="buyerId"  width="150"/>
+          <el-table-column  label="状态"  prop="status"   />
+          <el-table-column label="操作" width="300" >
+            <template #default="{ row }">
+              <div>
+              <el-button size="small" type="primary" @click="open(row)">详细信息</el-button>
+              <el-button size="small" type="success" @click="history(row)">历史记录</el-button>
+              <el-button size="small" type="danger" @click="handleDel(row)">删除</el-button>
+              </div>
+          </template>
+          </el-table-column>
+        </el-table>
     <!-- 分页底部 -->
-
     </el-main>
 </template>
 
@@ -76,13 +72,13 @@ export default {
   },
   data() {
     return {
-      isd:true,
-      input: '',
-      time:"",
-      si:'',
-      bi:'',
-      wl:'',
-      st:'',
+      notSelected:true,
+      orderId: '',
+      time:[],
+      sellerId:'',
+      buyerId:'',
+      logisticStatus:'',
+      orderStatus:'',
       tableData : [],
       tempData:[],
       arr:[]
@@ -90,26 +86,23 @@ export default {
   },
 methods: {
           SearchOrder(){
-           if(!this.input&&!this.time&&!this.si&&!this.bi&&!this.wl&&!this.st) {
-             this.$message({
-               message: '请至少填入一项信息',
-               type: 'warning',
-             })
-           }
-           else
-           {
-            searchOrder({"orderId":this.input,"startDateTime":this.time[0],"endDateTime":this.time[1],"sellerId":this.si,"buyerId":this.bi,"logisticsStatus":this.wl,"orderStatus":this.st}).then(response=>{
+            searchOrder({"orderId":this.orderId,
+                                "startDateTime":this.time[0],
+                                "endDateTime":this.time[1],
+                                "sellerId":this.sellerId,
+                                "buyerId":this.buyerId,
+                                "logisticsStatus":this.logisticStatus,
+                                "orderStatus":this.orderStatus}).then(response=>{
                         this.tableData=response.data
             })
-           }
           },
           handleSelectionChange(val){
              console.log(val)
               this.tempData=val
               if(this.tempData == undefined || this.tempData <= 0)
-              this.isd=true
+              this.notSelected=true
               else
-              this.isd=false
+              this.notSelected=false
           },
           handleDel(val) {
             console.log(val)

@@ -52,7 +52,7 @@ public class UserRightServiceImpl implements UserRightService{
 
 
         Sort sort = Sort.by(Sort.Direction.ASC, "id");
-        Pageable pageable = PageRequest.of(page, 50, sort);
+        Pageable pageable = PageRequest.of(page, 12, sort);
         Page<UserRight> rightPage=userRightRepository.getUserRightPageByRight(right,pageable);
         List<UserRight> userRights=rightPage.getContent();
         List<Map> members=new ArrayList<>();
@@ -116,7 +116,7 @@ public class UserRightServiceImpl implements UserRightService{
         Member member=memberRepository.getMemberByUser(user);
 
         Sort sort = Sort.by(Sort.Direction.ASC, "id");
-        Pageable pageable = PageRequest.of(page, 50, sort);
+        Pageable pageable = PageRequest.of(page, 12, sort);
         Page<UserRight> rightPage=userRightRepository.getUserRightPageByMember(member,pageable);
         List<UserRight> userRights=rightPage.getContent();
         Set<Right> rights=new HashSet<>();
@@ -189,7 +189,7 @@ public class UserRightServiceImpl implements UserRightService{
         List<Map> retList=new ArrayList<>();
 
         Sort sort = Sort.by(Sort.Direction.ASC, "id");
-        Pageable pageable = PageRequest.of(page, 50, sort);
+        Pageable pageable = PageRequest.of(page, 12, sort);
         Page<Member> memberPage=memberRepository.getMemberPageByMidLikeOrNameLike("%"+condition+"%","%"+condition+"%",pageable);
         List<Member> members=memberPage.getContent();
 
