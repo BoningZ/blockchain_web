@@ -20,6 +20,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.relational.core.sql.In;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -68,7 +69,10 @@ public class RightServiceImpl implements RightService{
     }
 
     @Override
-    public DataResponse getRightList(List<Integer> types,String name,int page) {
+    public DataResponse getRightList(DataRequest dataRequest) {
+        List<Integer> types=(List<Integer>) dataRequest.getList("types");
+        String name=dataRequest.getString("name");
+        int page=dataRequest.getInteger("page");
         Integer userId=CommonMethod.getUserId();
         User user=userRepository.findByUserId(userId).get();
         Admin admin=adminRepository.getAdminByUser(user);
@@ -80,9 +84,23 @@ public class RightServiceImpl implements RightService{
             List<RightType> rightTypes=rightTypeRepository.getRightTypesByIdIn(types);
             rightPage = rightRepository. getRightPageByAdminAndRightTypesInAndNameLike(admin, rightTypes, "%" + name + "%",pageable);
         }else rightPage=rightRepository.getRightPageByAdminAndNameLike(admin,"%"+name+"%",pageable);
+        List<Right> rights=rightPage.getContent();
+        List<Map> dataList=new ArrayList<>();
+        for(Right right:rights){
+            Map rightMap=new HashMap();
+            rightMap.put("name",right.getName());
+            rightMap.put("createTime",right.getCreateTime());
+            rightMap.put("updateTime",right.getUpdateTime());
+            rightMap.put("id",right.getId());
+
+            List<Integer> typeList=new ArrayList<>();
+            for(RightType rt:right.getRightTypes())typeList.add(rt.getId());
+            rightMap.put("types",typeList);
+            dataList.add(rightMap);
+        }
         Map m=new HashMap();
         m.put("totalPages",rightPage.getTotalPages());
-        m.put("data",rightPage.getContent());
+        m.put("data",dataList);
         return CommonMethod.getReturnData(m);
     }
 

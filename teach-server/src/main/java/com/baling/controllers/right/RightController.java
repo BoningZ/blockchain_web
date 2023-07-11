@@ -17,9 +17,9 @@ public class RightController {
     @Autowired
     RightService rightService;
 
-    @GetMapping("/getRightList")
-    public DataResponse getRightList(@RequestParam(value = "types",required = false) List<Integer> types, @RequestParam("name")String name, @RequestParam("page")int page){
-        return rightService.getRightList(types,name,page);
+    @PostMapping("/getRightList")
+    public DataResponse getRightList(@Valid @RequestBody DataRequest dataRequest){
+        return rightService.getRightList(dataRequest);
     }
 
     @DeleteMapping("/deleteRight")

@@ -33,7 +33,7 @@
       </el-form>
     </div>
     <el-table :data="logs" style="width: 100%" height="500">
-      <el-table-column  label="操作时间" sortable>
+      <el-table-column prop="operateTime"  label="操作时间" sortable>
         <template #default="scope">
           <el-date-picker
               v-model="scope.row.operateTime"
