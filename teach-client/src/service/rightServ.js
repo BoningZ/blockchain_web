@@ -27,6 +27,9 @@ function updateRightsByMember(data){
 function getRightsMap(){
     return getRequest('/api/right/getRightsMap',null)
 }
+function getMyRightTypes(){
+    return getRequest('/api/right/getMyRightTypes',null)
+}
 
 export {
     addRight,
@@ -36,5 +39,7 @@ export {
 
     getRightsOfAll,
     updateRightsByMember,
-    getRightsMap
+    getRightsMap,
+
+    getMyRightTypes
 }

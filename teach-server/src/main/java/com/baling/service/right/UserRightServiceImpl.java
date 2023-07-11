@@ -131,9 +131,11 @@ public class UserRightServiceImpl implements UserRightService{
     public DataResponse getMyRightTypes() {
         Member member=memberRepository.getMemberByUser(getCurrentUser());
         List<UserRight> userRights=userRightRepository.getUserRightsByMember(member);
-        Set<RightType> typeSet=new HashSet<>();
+        Set<String> typeSet=new HashSet<>();
         for(UserRight ur:userRights){
-            typeSet.addAll(ur.getRight().getRightTypes());
+            List<String> values=new ArrayList<>();
+            for(RightType rightType:ur.getRight().getRightTypes())values.add(rightType.getValue().name());
+            typeSet.addAll(values);
         }
         return CommonMethod.getReturnData(typeSet);
     }

@@ -26,7 +26,7 @@
           </el-select>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" @click="searchOrder">查询</el-button>
+          <el-button type="primary" @click="searchOrder" v-show="hasRight('RIGHT_QUERY')">查询</el-button>
         </el-form-item>
       </el-form>
     </div>
@@ -200,6 +200,7 @@
 <script>
 import Navi from "@/components/Navi";
 import {getLogisticsList,getOrderStatusList} from "@/service/infoServ";
+import {getMyRightTypes} from "@/service/rightServ";
 import {searchOrder,getHistoryOrder,createOrder,deleteOrder,updateLogistics,updateTxn,addSellerReview,addBuyerReview,multiDeleteOrder,decrypt} from "@/service/fabricServ";
 import {ElMessage} from "element-plus";
 
@@ -208,6 +209,7 @@ export default {
   components:{Navi},
   data(){
     return{
+      rightTypes:[],
       logisticsStatusList:[],
       logisticStatusMap:{},
       orderStatusList:[],
@@ -251,8 +253,12 @@ export default {
   created() {
     this.getOrderStatusEnum()
     this.getLogisticsStatusEnum()
+    this.getRightTypes()
   },
   methods:{
+    hasRight(right){
+      return this.rightTypes.includes(right)
+    },
     decrypt(name){
       decrypt({"name":name}).then(res=>{
         if(res.code==='0'){
@@ -353,6 +359,11 @@ export default {
           result.set(value,label);
           return result;
         }, new Map());
+      })
+    },
+    getRightTypes(){
+      getMyRightTypes().then(res=>{
+        this.rightTypes=res.data
       })
     }
   }
