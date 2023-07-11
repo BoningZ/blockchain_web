@@ -75,7 +75,7 @@ public class UserRightController {
      * @return “成员-权限集"列表
      */
     @GetMapping("/getRightsOfAll")
-    public DataResponse getRightsOfAll(@RequestParam("page")Integer page){
-        return userRightService.getRightsOfAll(page);
+    public DataResponse getRightsOfAll(@RequestParam("page")Integer page,@RequestParam("condition")String condition){
+        return userRightService.getRightsOfAll(page,condition);
     }
 }

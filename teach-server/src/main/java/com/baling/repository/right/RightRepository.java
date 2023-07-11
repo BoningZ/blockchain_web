@@ -18,4 +18,6 @@ public interface RightRepository extends JpaRepository<Right,Integer> {
     Page<Right> getRightPageByAdminAndNameLike(Admin admin,String name,Pageable pageable);
     List<Right> getRightsByNameLike(String name);
     void deleteById(Integer id);
+
+    List<Right> getRightsByAdmin(Admin admin);
 }

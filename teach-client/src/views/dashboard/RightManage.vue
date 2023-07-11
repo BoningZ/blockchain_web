@@ -70,10 +70,10 @@
               <div v-else>{{ scope.row.name }}</div>
             </template>
           </el-table-column>
-          <el-table-column prop="permissionComposition" label="权限组成" >
+          <el-table-column  label="权限组成" >
             <template #default="scope">
               <div v-if="scope.row.editable">
-                <el-select v-model="scope.row.types" multiple>
+                <el-select v-model="scope.row.types" multiple filterable>
                   <el-option v-for="option in rightTypes" :key="option.id" :label="option.label" :value="option.id"></el-option>
                 </el-select>
               </div>
@@ -99,6 +99,9 @@
             </template>
           </el-table-column>
         </el-table>
+        <div class="page-container">
+          <el-pagination class="center" background layout="prev, pager, next" :page-count="rightTotalPages" :current-page="searchRight.page+1" @current-change="rightChangePage"/>
+        </div>
 
 
 
@@ -108,23 +111,41 @@
       <!-- 用户权限分配 -->
       <div v-if="activeMenu === 'user'">
         <h2>用户权限分配</h2>
+        <el-form  :inline="true">
+          <el-form-item label="条件">
+            <el-input v-model="searchMember.condition"/>
+          </el-form-item>
+          <el-form-item>
+            <el-button type="primary" @click="searchMemberTable">搜索</el-button>
+          </el-form-item>
+        </el-form>
         <el-table
-            :data="pagedUsers"
+            :data="members"
             style="width: 100%">
           <el-table-column label="操作">
             <template #default="scope">
-              <el-button type="text" @click="editUser(scope.row)">编辑</el-button>
-              <el-button type="text" @click="deleteUser(scope.row.id)">删除</el-button>
+              <el-button v-if="scope.row.editable" link type="success" @click="saveMember(scope.row)">确认</el-button>
+              <el-button v-else link type="primary" @click="editMember(scope.row)">编辑</el-button>
             </template>
           </el-table-column>
-          <el-table-column prop="username" label="用户名"></el-table-column>
-          <el-table-column prop="userId" label="用户ID"></el-table-column>
-          <el-table-column prop="permissionName" label="权限名称"></el-table-column>
-          <el-table-column prop="admin" label="创建者"></el-table-column>
-          <el-table-column prop="createdTime" label="创建时间" sortable></el-table-column>
-          <el-table-column prop="modifiedTime" label="修改时间" sortable></el-table-column>
-
+          <el-table-column prop="name" label="姓名"></el-table-column>
+          <el-table-column prop="mid" label="工号"></el-table-column>
+          <el-table-column label="拥有权限" >
+            <template #default="scope">
+              <div v-if="scope.row.editable">
+                <el-select v-model="scope.row.rights" multiple filterable>
+                  <el-option v-for="option in rightsList" :key="option.id" :label="option.name" :value="option.id"></el-option>
+                </el-select>
+              </div>
+              <div v-else>
+                <el-tag v-for="id in scope.row.rights" :key="id">{{rightsMap.get(id)}}</el-tag>
+              </div>
+            </template>
+          </el-table-column>
         </el-table>
+        <div class="page-container">
+          <el-pagination class="center" background layout="prev, pager, next" :page-count="memberTotalPages" :current-page="searchMember.page+1" @current-change="memberChangePage"/>
+        </div>
 
 
         <!-- 其他用户权限分配相关代码 -->
@@ -136,8 +157,7 @@
 <script>
 import Navi from '@/components/Navi'
 import {getBasicRightList} from "@/service/infoServ";
-// eslint-disable-next-line no-unused-vars
-import {getRightList,addRight,deleteRight,updateRight} from "@/service/rightServ";
+import {getRightList,addRight,deleteRight,updateRight,getRightsMap,getRightsOfAll,updateRightsByMember} from "@/service/rightServ";
 import {ElMessage} from "element-plus";
 
 export default {
@@ -146,7 +166,9 @@ export default {
   data() {
     return {
       activeMenu: 'permission',
+
       newRightVisible:false,
+      rightTotalPages:0,
       rightTypes:[],
       rightTypesMap:{},
       searchRight:{
@@ -160,33 +182,14 @@ export default {
       },
       rights:[],
 
-      users: [
-        {
-          id: 1,
-          username: '用户1',
-          createdTime: '2023-07-01',
-          modifiedTime: '2023-07-02',
-          userId: 1,
-          permissionName: '权限1',
-          admin: '创建者1'
-        },
-        {
-          id: 2,
-          username: '用户2',
-          createdTime: '2023-07-02',
-          modifiedTime: '2023-07-03',
-          userId: 2,
-          permissionName: '权限2',
-          admin: '创建者2'
-        },
-        // 其他用户数据
-      ],
-      options: [
-        { value: 'A', label: '选项A' },
-        { value: 'B', label: '选项B' },
-        { value: 'C', label: '选项C' },
-        { value: 'D', label: '选项D' }
-      ]
+      searchMember:{
+        condition:"",
+        page:0
+      },
+      memberTotalPages:0,
+      rightsMap:{},
+      rightsList:[],
+      members: []
     };
   },
   created() {
@@ -198,14 +201,53 @@ export default {
       }, new Map());
     })
     this.searchRightTable()
+    this.getRightsMap()
+    this.searchMemberTable()
   },
   methods: {
+    rightChangePage(pageNum){
+      this.searchRight.page=pageNum-1;
+      getRightList(this.searchRight).then(res=>{
+        this.rights=res.data.data.map(obj => {
+          return { ...obj, editable: false };
+        });
+        this.rightTotalPages=res.data.totalPages
+      })
+    },
+    memberChangePage(pageNum){
+      this.searchMember.page=pageNum-1;
+      getRightList(this.searchMember).then(res=>{
+        this.members=res.data.data.map(obj => {
+          return { ...obj, editable: false };
+        });
+        this.memberTotalPages=res.data.totalPages
+      })
+    },
     searchRightTable(){
       this.searchRight.page=0
       getRightList(this.searchRight).then(res=>{
         this.rights=res.data.data.map(obj => {
           return { ...obj, editable: false };
         });
+        this.rightTotalPages=res.data.totalPages
+      })
+    },
+    searchMemberTable(){
+      this.searchMember.page=0
+      getRightsOfAll(this.searchMember).then(res=>{
+        this.members=res.data.data.map(obj => {
+          return { ...obj, editable: false };
+        });
+        this.memberTotalPages=res.data.totalPages
+      })
+    },
+    getRightsMap(){
+      getRightsMap().then(res=>{
+        this.rightsList=res.data
+        this.rightsMap=res.data.reduce((result, { id, name }) => {
+          result.set(id, name);
+          return result;
+        }, new Map());
       })
     },
     submitRight(){
@@ -228,6 +270,9 @@ export default {
     editPermission(permission) {
       permission.editable = true;
     },
+    editMember(member){
+      member.editable=true
+    },
     savePermission(permission) {
       updateRight(permission).then(res=>{
         ElMessage.success(res.data)
@@ -235,6 +280,12 @@ export default {
         permission.updateTime=new Date()
       })
     },
+    saveMember(member){
+      updateRightsByMember(member).then(res=>{
+        ElMessage.success(res.data)
+        member.editable = false;
+      })
+    }
 
 
   }
@@ -263,5 +314,10 @@ export default {
 }
 .dialog-footer button:first-child {
   margin-right: 10px;
+}
+.page-container{
+  display: flex;
+  justify-content: center; /* 水平居中 */
+  align-items: center; /* 垂直居中 */
 }
 </style>

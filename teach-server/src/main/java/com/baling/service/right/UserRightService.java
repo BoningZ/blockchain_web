@@ -13,5 +13,5 @@ public interface UserRightService {
     DataResponse getMyRightTypes();
     DataResponse getRightsByMember(Integer memberId);
      ResponseEntity<?> updateRightsForMember(DataRequest dataRequest);
-     DataResponse getRightsOfAll(int page);
+     DataResponse getRightsOfAll(int page,String condition);
 }

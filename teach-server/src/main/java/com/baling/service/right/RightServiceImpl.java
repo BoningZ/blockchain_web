@@ -79,7 +79,7 @@ public class RightServiceImpl implements RightService{
 
         Page<Right> rightPage;
         Sort sort = Sort.by(Sort.Direction.ASC, "id");
-        Pageable pageable = PageRequest.of(page, 50, sort);
+        Pageable pageable = PageRequest.of(page, 12, sort);
         if(types!=null&&types.size()>0) {
             List<RightType> rightTypes=rightTypeRepository.getRightTypesByIdIn(types);
             rightPage = rightRepository. getRightPageByAdminAndRightTypesInAndNameLike(admin, rightTypes, "%" + name + "%",pageable);
@@ -176,6 +176,23 @@ public class RightServiceImpl implements RightService{
             logRepository.save(log);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
+    }
+
+    @Override
+    public DataResponse getRightsMap() {
+        Integer userId=CommonMethod.getUserId();
+        User user=userRepository.findByUserId(userId).get();
+        Admin admin=adminRepository.getAdminByUser(user);
+
+        List<Right> rights=rightRepository.getRightsByAdmin(admin);
+        List<Map> dataList=new ArrayList<>();
+        for(Right right:rights){
+            Map m=new HashMap();
+            m.put("id",right.getId());
+            m.put("name",right.getName());
+            dataList.add(m);
+        }
+        return CommonMethod.getReturnData(dataList);
     }
 
 

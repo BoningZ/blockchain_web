@@ -1,4 +1,4 @@
-import {putRequest,deleteRequest,postRequest} from "./templateRequest"
+import {putRequest,deleteRequest,postRequest,getRequest} from "./templateRequest"
 
 function addRight(data){
     return putRequest('/api/right/addRight',data)
@@ -16,9 +16,25 @@ function getRightList(data){
     return postRequest('/api/right/getRightList',data)
 }
 
+function getRightsOfAll(params){
+    return getRequest('/api/right/getRightsOfAll',params)
+}
+
+function updateRightsByMember(data){
+    return putRequest('/api/right/updateRightsByMember',data)
+}
+
+function getRightsMap(){
+    return getRequest('/api/right/getRightsMap',null)
+}
+
 export {
     addRight,
     deleteRight,
     updateRight,
-    getRightList
+    getRightList,
+
+    getRightsOfAll,
+    updateRightsByMember,
+    getRightsMap
 }

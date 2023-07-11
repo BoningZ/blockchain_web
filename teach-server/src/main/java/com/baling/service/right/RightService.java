@@ -12,6 +12,7 @@ public interface RightService {
     ResponseEntity<?> deleteRight(Integer id);
     ResponseEntity<?> addRight(DataRequest dataRequest);
     ResponseEntity<?> updateRight(DataRequest dataRequest);
+    DataResponse getRightsMap();
 
 
 }

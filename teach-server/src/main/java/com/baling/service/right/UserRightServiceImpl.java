@@ -154,9 +154,9 @@ public class UserRightServiceImpl implements UserRightService{
         Log log=new Log(getCurrentUser(),rightTypeRepository.getByValue(ERightType.RIGHT_WARRANT),"添加权限");
         logRepository.save(log);
         try {
-            Integer memberId = dataRequest.getInteger("memberId");
+            Integer memberId = dataRequest.getInteger("id");
             Member member = memberRepository.getById(memberId);
-            List<Integer> rightIds = (List<Integer>) dataRequest.getList("rightIds");
+            List<Integer> rightIds = (List<Integer>) dataRequest.getList("rights");
             List<Integer> originalRightIds = new ArrayList<>();
             for (UserRight ur : userRightRepository.getUserRightsByMember(memberRepository.getById(memberId))) {
                 Right right = ur.getRight();
@@ -185,25 +185,32 @@ public class UserRightServiceImpl implements UserRightService{
     }
 
     @Override
-    public DataResponse getRightsOfAll(int page) {
+    public DataResponse getRightsOfAll(int page,String condition) {
         List<Map> retList=new ArrayList<>();
 
         Sort sort = Sort.by(Sort.Direction.ASC, "id");
         Pageable pageable = PageRequest.of(page, 50, sort);
-        List<Member> members=memberRepository.getMemberPageBy(pageable).getContent();
+        Page<Member> memberPage=memberRepository.getMemberPageByMidLikeOrNameLike("%"+condition+"%","%"+condition+"%",pageable);
+        List<Member> members=memberPage.getContent();
 
         for(Member member:members){
             Map m=new HashMap();
-            m.put("member",member);
-            List<Right> rights=new ArrayList<>();
+            m.put("id",member.getId());
+            m.put("mid",member.getMid());
+            m.put("name",member.getName());
+            List<Integer> rights=new ArrayList<>();
             for(UserRight ur:userRightRepository.getUserRightsByMember(member)){
                 if(ur.getRight().getAdmin().getUser().equals(getCurrentUser()))
-                    rights.add(ur.getRight());
+                    rights.add(ur.getRight().getId());
             }
             m.put("rights",rights);
             retList.add(m);
         }
-        return CommonMethod.getReturnData(retList);
+
+        Map retMap=new HashMap();
+        retMap.put("data",retList);
+        retMap.put("totalPages",memberPage.getTotalPages());
+        return CommonMethod.getReturnData(retMap);
     }
 
     private User getCurrentUser(){

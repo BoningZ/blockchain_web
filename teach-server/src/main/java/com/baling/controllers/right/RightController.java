@@ -37,6 +37,11 @@ public class RightController {
         return rightService.updateRight(dataRequest);
     }
 
+    @GetMapping("/getRightsMap")
+    public DataResponse getRightsMap(){
+        return rightService.getRightsMap();
+    }
+
 
 
 }

@@ -16,4 +16,6 @@ public interface MemberRepository extends JpaRepository<Member,Integer> {
     List<Member> getMembersBy();
     Page<Member> getMemberPageBy(Pageable pageable);
     List<Member> getMembersByMidLikeOrNameLike(String mid,String name);
+
+    Page<Member> getMemberPageByMidLikeOrNameLike(String mid,String name,Pageable pageable);
 }
