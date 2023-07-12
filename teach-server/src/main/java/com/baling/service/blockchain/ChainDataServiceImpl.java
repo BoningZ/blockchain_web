@@ -188,7 +188,7 @@ public class ChainDataServiceImpl implements ChainDataService{
         if(!sharedServiceUtil.hasRight(ERightType.RIGHT_UPDATE_LOGISTICS))return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("无更改物流状态权限");
         String orderId=dataRequest.getString("orderId"), status=dataRequest.getString("logistics");
         String[] initArgs={orderId,status};
-        Log log=new Log(getCurrentUser(),rightTypeRepository.getByValue(ERightType.RIGHT_UPDATE_LOGISTICS),"修改交易："+orderId+"物流状态为："+status);
+        Log log=new Log(getCurrentUser(),rightTypeRepository.getByValue(ERightType.RIGHT_UPDATE_LOGISTICS),"修改交易："+orderId+" 物流状态为："+status);
         logRepository.save(log);
         try{
             invoke("updateLogistics",initArgs);
