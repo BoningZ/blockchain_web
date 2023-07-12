@@ -39,5 +39,10 @@ public class ProfileController {
         return profileService.submitProfile(dataRequest);
     }
 
+    @GetMapping("/getBasicInfo")
+    public DataResponse getBasicInfo(){
+        return profileService.getBasicInfo();
+    }
+
 }
 

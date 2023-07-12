@@ -6,4 +6,5 @@ import com.baling.payload.response.DataResponse;
 public interface ProfileService {
     DataResponse getProfile(DataRequest dataRequest);
     DataResponse submitProfile(DataRequest dataRequest);
+    DataResponse getBasicInfo();
 }

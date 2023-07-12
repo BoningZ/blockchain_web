@@ -14,10 +14,14 @@ function getLogisticsList(){
 function getOrderStatusList(){
     return getRequest('/api/info/getOrderStatus',null)
 }
+function getBasicInfo(){
+    return getRequest('/api/teach/getBasicInfo',null)
+}
 
 export {
     getBasicRightList,
     getAllRightList,
     getLogisticsList,
-    getOrderStatusList
+    getOrderStatusList,
+    getBasicInfo
 }

@@ -88,4 +88,26 @@ public class ProfileServiceImpl implements ProfileService{
         logRepository.save(log);
         return CommonMethod.getReturnMessageOK();
     }
+
+    @Override
+    public DataResponse getBasicInfo() {
+        Integer userId= CommonMethod.getUserId();
+        User user;
+        Optional<User> tmp = userRepository.findByUserId(userId);
+        user = tmp.get();
+        Map dataMap=new HashMap();
+        dataMap.put("username",user.getUsername());
+        if(user.getUserType().getName()== EUserType.ROLE_ADMIN){
+            Admin admin =adminRepository.getAdminByUser(user);
+            dataMap.put("name",admin.getName());
+            dataMap.put("id",admin.getAid());
+            dataMap.put("type","管理员");
+        }else{
+            Member member =memberRepository.getMemberByUser(user);
+            dataMap.put("name",member.getName());
+            dataMap.put("id",member.getMid());
+            dataMap.put("type","成员");
+        }
+        return CommonMethod.getReturnData(dataMap);
+    }
 }
