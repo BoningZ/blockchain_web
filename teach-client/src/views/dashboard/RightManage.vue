@@ -1,5 +1,4 @@
 <template>
-  <Navi/>
   <div>
     <div class="sidebar">
       <el-menu :default-active="activeMenu" @select="handleMenuSelect">
@@ -156,14 +155,12 @@
 </template>
 
 <script>
-import Navi from '@/components/Navi'
 import {getBasicRightList} from "@/service/infoServ";
 import {getRightList,addRight,deleteRight,updateRight,getRightsMap,getRightsOfAll,updateRightsByMember} from "@/service/rightServ";
 import {ElMessage} from "element-plus";
 
 export default {
   name: 'RightManage',
-  components:{Navi},
   data() {
     return {
       activeMenu: 'permission',

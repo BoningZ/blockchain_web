@@ -1,5 +1,5 @@
 <template>
-  <Navi/>
+  <router-view>
   <div >
     <h2>订单管理</h2>
     <div>
@@ -30,36 +30,42 @@
         </el-form-item>
       </el-form>
     </div>
-    <el-button type="success" @click="newOrderDialog=true">创建订单</el-button>
+    <el-button type="success" @click="newOrderDialog=true" v-show="hasRight('RIGHT_ADD')">创建订单</el-button>
     <el-popconfirm title="确定删除吗？" @confirm="multiDelete" v-show="readyToDelete.length>0">
       <template #reference>
-        <el-button type="danger"  v-show="readyToDelete.length>0">批量删除</el-button>
+        <el-button type="danger"  v-show="readyToDelete.length>0&&hasRight('RIGHT_DELETE')">批量删除</el-button>
       </template>
     </el-popconfirm>
 
 
     <el-table :data="orders" style="width: 100%" height="500"  @selection-change="handleSelectionChange">
-      <el-table-column label="解密">
+      <el-table-column prop="orderId"  label="订单号" sortable/>
+      <el-table-column prop="orderTime"  label="订单日期" sortable/>
+      <el-table-column  width="80">
         <template #default="scope">
           <el-button size="small" type="info" @click="decrypt(scope.row.name)">解密</el-button>
         </template>
       </el-table-column>
-      <el-table-column prop="orderTime"  label="订单日期" sortable/>
-      <el-table-column prop="name"  label="订单名称" sortable/>
-      <el-table-column label="订单状态" width="120">
+      <el-table-column prop="name"  label="订单名称" />
+      <el-table-column label="订单状态" width="100">
         <template #default="scope">
           <el-tag>{{orderStatusMap.get(scope.row.status)}}</el-tag>
         </template>
       </el-table-column>
-      <el-table-column prop="buyerId"  label="买家编号" sortable width="120"/>
-      <el-table-column prop="sellerId"  label="卖家编号" sortable width="120"/>
+      <el-table-column label="物流状态" width="100">
+        <template #default="scope">
+          <el-tag>{{logisticStatusMap.get(scope.row.logistics)}}</el-tag>
+        </template>
+      </el-table-column>
+      <el-table-column prop="buyerId"  label="买家编号" sortable width="110"/>
+      <el-table-column prop="sellerId"  label="卖家编号" sortable width="110"/>
       <el-table-column prop="quantity"  label="数量" sortable width="80"/>
       <el-table-column prop="amount"  label="金额" sortable width="80"/>
       <el-table-column label="操作">
         <template #default="scope">
           <el-button size="small" type="primary" @click="openEdit(scope.row)">编辑</el-button>
-          <el-button size="small" type="success" @click="openHistory(scope.row.orderId)">历史</el-button>
-          <el-popconfirm title="确定删除吗？" @confirm="deleteOrder(scope.row.orderId)">
+          <el-button size="small" type="success" @click="openHistory(scope.row.orderId)" v-show="hasRight('RIGHT_QUERY_HISTORY')">历史</el-button>
+          <el-popconfirm title="确定删除吗？" @confirm="deleteOrder(scope.row.orderId)" v-show="hasRight('RIGHT_DELETE')">
             <template #reference>
               <el-button size="small" type="danger" >删除</el-button>
             </template>
@@ -141,7 +147,7 @@
 
     <el-dialog v-model="editDialog" title="编辑订单">
       <el-form label-position="left" label-width="80px" >
-        <el-form-item label="订单状态">
+        <el-form-item label="订单状态" v-show="hasRight('RIGHT_UPDATE_STATUS')">
           <el-form :inline="true">
             <el-form-item >
               <el-select v-model="editForm.status" :clearable="true" placeholder="订单状态">
@@ -153,7 +159,7 @@
             </el-form-item>
           </el-form>
         </el-form-item>
-        <el-form-item label="物流状态">
+        <el-form-item label="物流状态" v-show="hasRight('RIGHT_UPDATE_LOGISTICS')">
           <el-form :inline="true">
             <el-form-item >
               <el-select v-model="editForm.logistics" :clearable="true" placeholder="物流状态">
@@ -165,7 +171,7 @@
             </el-form-item>
           </el-form>
         </el-form-item>
-        <el-form-item label="买家评价">
+        <el-form-item label="买家评价" v-show="hasRight('RIGHT_UPDATE_BUYER')">
           <el-form :inline="true">
             <el-form-item >
               <el-input :rows="3" type="textarea" v-model="editForm.buyerReview" style="width:500px"></el-input>
@@ -175,7 +181,7 @@
             </el-form-item>
           </el-form>
         </el-form-item>
-        <el-form-item label="卖家评价" >
+        <el-form-item label="卖家评价" v-show="hasRight('RIGHT_UPDATE_SELLER')" >
           <el-form :inline="true">
             <el-form-item >
               <el-input :rows="3" type="textarea" v-model="editForm.sellerReview" style="width:500px"></el-input>
@@ -194,11 +200,11 @@
 
 
   </div>
+  </router-view>
 
 </template>
 
 <script>
-import Navi from "@/components/Navi";
 import {getLogisticsList,getOrderStatusList} from "@/service/infoServ";
 import {getMyRightTypes} from "@/service/rightServ";
 import {searchOrder,getHistoryOrder,createOrder,deleteOrder,updateLogistics,updateTxn,addSellerReview,addBuyerReview,multiDeleteOrder,decrypt} from "@/service/fabricServ";
@@ -206,7 +212,6 @@ import {ElMessage} from "element-plus";
 
 export default {
   name: "SearchOrder",
-  components:{Navi},
   data(){
     return{
       rightTypes:[],
@@ -271,7 +276,7 @@ export default {
     },
     multiDelete(){
       multiDeleteOrder({"orderIds":this.readyToDelete}).then(res=>{
-        ElMessage.success(res.data)
+        ElMessage.success(res)
         this.searchOrder()
       })
     },
@@ -333,8 +338,12 @@ export default {
       })
     },
     searchOrder(){
-      this.searchForm.startDateTime=this.searchForm.dateTimeRange[0]
-      this.searchForm.endDateTime=this.searchForm.dateTimeRange[1]
+      if(this.searchForm.dateTimeRange!=null&&this.searchForm.dateTimeRange.length>0){
+        this.searchForm.startDateTime=this.searchForm.dateTimeRange[0]
+        this.searchForm.endDateTime=this.searchForm.dateTimeRange[1]
+      }else{
+        this.searchForm.startDateTime=this.searchForm.endDateTime=null
+      }
       searchOrder(this.searchForm).then(res=>{
         if(res.code==='0')
           this.orders=res.data

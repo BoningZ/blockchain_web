@@ -6,9 +6,10 @@
         mode="horizontal"
         router
     >
-      <el-menu-item index="/">Home</el-menu-item>
+      <el-menu-item index="/">首页</el-menu-item>
       <el-menu-item class="menu-item" v-for="(v,i) in list" :key="i" :index="'/'+v.name">{{v.title}}</el-menu-item>
     </el-menu>
+    <router-view></router-view>
   </div>
 </template>
 

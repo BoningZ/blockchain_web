@@ -92,16 +92,17 @@ public class ChainDataServiceImpl implements ChainDataService{
 
     @Override
     public DataResponse searchTxs(DataRequest dataRequest) {
-        String startDateTime=dataRequest.getString("startDateTime"), endDateTime=dataRequest.getString("endDateTime");
+        Date startDateTime=dataRequest.getDate("startDateTime"), endDateTime=dataRequest.getDate("endDateTime");
         String buyerId=dataRequest.getString("buyerId"), sellerId=dataRequest.getString("sellerId");
         String logisticsStatus=dataRequest.getString("logisticsStatus");
         String orderStatus=dataRequest.getString("orderStatus");
         if(!sharedServiceUtil.hasRight(ERightType.RIGHT_QUERY))return CommonMethod.getReturnMessageError("无查询权限！");
 
-        if(endDateTime==null)endDateTime="";
-        if(startDateTime==null)startDateTime="";
+        String startDateString="", endDateString="";
+        if(endDateTime!=null)endDateString=formatDate(endDateTime);
+        if(startDateTime!=null)startDateString=formatDate(startDateTime);
 
-        String[] initArgs={startDateTime,endDateTime,buyerId,sellerId,logisticsStatus,orderStatus};
+        String[] initArgs={startDateString,endDateString,buyerId,sellerId,logisticsStatus,orderStatus};
         Log log=new Log(getCurrentUser(),rightTypeRepository.getByValue(ERightType.RIGHT_QUERY),"搜索交易");
         logRepository.save(log);
         try {

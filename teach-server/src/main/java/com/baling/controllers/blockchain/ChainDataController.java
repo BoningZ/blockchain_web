@@ -42,7 +42,7 @@ public class ChainDataController {
         return chainDataService.deleteTxn(orderId);
     }
 
-    @DeleteMapping("/deleteTxs")
+    @PostMapping("/deleteTxs")
     public ResponseEntity<?> deleteTxs(@Valid @RequestBody DataRequest dataRequest){
         List orderIds=dataRequest.getList("orderIds");
         try{

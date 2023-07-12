@@ -8,8 +8,8 @@ function deleteOrder(params){
     return deleteRequest('/api/chainData/deleteTxn',params)
 }
 
-function multiDeleteOrder(params){
-    return deleteRequest('/api/chainData/deleteTxs',params)
+function multiDeleteOrder(data){
+    return postRequest('/api/chainData/deleteTxs',data)
 }
 
 function searchOrder(data){

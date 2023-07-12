@@ -1,5 +1,4 @@
 <template>
-  <Navi/>
   <div >
     <h2>日志列表</h2>
     <div >
@@ -75,13 +74,11 @@
 </template>
 
 <script>
-import Navi from '@/components/Navi'
 import {searchLogs,audit,generateHash} from "@/service/logServ";
 import {getAllRightList} from "@/service/infoServ";
 import {ElMessage} from "element-plus"
 export default {
   name:'UserLog',
-  components:{Navi},
   data() {
     return {
       rightTypes:[],
