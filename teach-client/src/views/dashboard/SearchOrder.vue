@@ -26,6 +26,9 @@
           </el-select>
         </el-form-item>
         <el-form-item>
+          <el-button type="warning" @click="clearSearch" v-show="hasRight('RIGHT_QUERY')">清空条件</el-button>
+        </el-form-item>
+        <el-form-item>
           <el-button type="primary" @click="searchOrder" v-show="hasRight('RIGHT_QUERY')">查询</el-button>
         </el-form-item>
       </el-form>
@@ -39,14 +42,14 @@
 
 
     <el-table :data="orders" style="width: 100%" height="500"  @selection-change="handleSelectionChange">
-      <el-table-column prop="orderId"  label="订单号" sortable/>
-      <el-table-column prop="orderTime"  label="订单日期" sortable/>
+      <el-table-column prop="orderId"  label="订单号" sortable width="120"/>
+      <el-table-column prop="orderTime"  label="订单日期" sortable width="120"/>
       <el-table-column  width="80">
         <template #default="scope">
           <el-button size="small" type="info" @click="decrypt(scope.row.name)">解密</el-button>
         </template>
       </el-table-column>
-      <el-table-column prop="name"  label="订单名称" />
+      <el-table-column prop="name"  label="订单名称" show-overflow-tooltip/>
       <el-table-column label="订单状态" width="100">
         <template #default="scope">
           <el-tag>{{orderStatusMap.get(scope.row.status)}}</el-tag>
@@ -130,7 +133,7 @@
               placeholder="请选择交易日期"/>
         </el-form-item>
         <el-form-item label="数量">
-          <el-input-number v-model="newOrderForm.quantity" :min="0" :max="10"  />
+          <el-input-number v-model="newOrderForm.quantity" :min="0" :max="9999999"  />
         </el-form-item>
         <el-form-item label="金额">
           <el-input-number v-model="newOrderForm.amount" :precision="2" :min="0" :step="0.01" :max="9999999" />
@@ -172,24 +175,47 @@
           </el-form>
         </el-form-item>
         <el-form-item label="买家评价" v-show="hasRight('RIGHT_UPDATE_BUYER')">
-          <el-form :inline="true">
-            <el-form-item >
-              <el-input :rows="3" type="textarea" v-model="editForm.buyerReview" style="width:500px"></el-input>
-            </el-form-item>
-            <el-form-item>
+          <el-row style="width: 800px;">
+            <el-col :span="9">
+              <el-input :rows="4" type="textarea" v-model="editForm.buyerReviewCh"  ></el-input>
+            </el-col>
+            <el-col :span="2"  class="button-container">
+              <el-row>
+                <el-button @click="translate('buyer','zh')">→</el-button>
+              </el-row>
+              <el-row>
+                <el-button @click="translate('buyer','en')">←</el-button>
+              </el-row>
+            </el-col>
+            <el-col :span="9">
+              <el-input :rows="4" type="textarea" v-model="editForm.buyerReview" ></el-input>
+            </el-col>
+            <el-col :span="4" class="button-container">
               <el-button @click="submitOrderBuyer">提交</el-button>
-            </el-form-item>
-          </el-form>
+            </el-col>
+          </el-row>
         </el-form-item>
+
         <el-form-item label="卖家评价" v-show="hasRight('RIGHT_UPDATE_SELLER')" >
-          <el-form :inline="true">
-            <el-form-item >
-              <el-input :rows="3" type="textarea" v-model="editForm.sellerReview" style="width:500px"></el-input>
-            </el-form-item>
-            <el-form-item>
+          <el-row style="width: 800px;">
+            <el-col :span="9">
+              <el-input :rows="4" type="textarea" v-model="editForm.sellerReviewCh"  ></el-input>
+            </el-col>
+            <el-col :span="2"  class="button-container">
+              <el-row>
+                <el-button @click="translate('seller','zh')">→</el-button>
+              </el-row>
+              <el-row>
+                <el-button @click="translate('seller','en')">←</el-button>
+              </el-row>
+            </el-col>
+            <el-col :span="9">
+              <el-input :rows="4" type="textarea" v-model="editForm.sellerReview" ></el-input>
+            </el-col>
+            <el-col :span="4" class="button-container">
               <el-button @click="submitOrderSeller">提交</el-button>
-            </el-form-item>
-          </el-form>
+            </el-col>
+          </el-row>
         </el-form-item>
       </el-form>
     </el-dialog>
@@ -207,7 +233,7 @@
 <script>
 import {getLogisticsList,getOrderStatusList} from "@/service/infoServ";
 import {getMyRightTypes} from "@/service/rightServ";
-import {searchOrder,getHistoryOrder,createOrder,deleteOrder,updateLogistics,updateTxn,addSellerReview,addBuyerReview,multiDeleteOrder,decrypt} from "@/service/fabricServ";
+import {searchOrder,getHistoryOrder,createOrder,deleteOrder,updateLogistics,updateTxn,addSellerReview,addBuyerReview,multiDeleteOrder,decrypt,translate} from "@/service/fabricServ";
 import {ElMessage} from "element-plus";
 
 export default {
@@ -261,6 +287,44 @@ export default {
     this.getRightTypes()
   },
   methods:{
+    clearSearch(){
+      this.searchForm={
+        orderId:"",
+        dateTimeRange:[],
+        sellerId:"",
+        buyerId:"",
+        logisticsStatus:"",
+        orderStatus:""
+      }
+    },
+    translate(name,src) {
+      let content;
+      if (name === 'seller' && src === 'zh') {
+        content = this.editForm.sellerReviewCh
+      }else if(name === 'seller' && src === 'en') {
+        content = this.editForm.sellerReview
+      }else if(src === 'zh') {
+        content = this.editForm.buyerReviewCh
+      }else{
+        content = this.editForm.buyerReview
+      }
+      translate({"content":content,"source":src}).then(res=>{
+        if(res.code==='0') {
+          let result = res.data
+          if (name === 'seller' && src === 'zh') {
+            this.editForm.sellerReview = result
+          } else if (name === 'seller' && src === 'en') {
+            this.editForm.sellerReviewCh = result
+          } else if (src === 'zh') {
+            this.editForm.buyerReview = result
+          } else {
+            this.editForm.buyerReviewCh = result
+          }
+        }else{
+          ElMessage.error(res.msg)
+        }
+      })
+    },
     hasRight(right){
       return this.rightTypes.includes(right)
     },
@@ -317,6 +381,16 @@ export default {
       createOrder(this.newOrderForm).then(res=>{
         ElMessage.success(res.data)
         this.newOrderDialog=false
+        this.newOrderForm={
+          orderId:"",
+          name:"",
+          quantity:0,
+          amount:0,
+          orderTime:null,
+          buyerId:"",
+          sellerId:"",
+          encrypt:true
+        }
         this.searchOrder()
       })
     },
@@ -380,5 +454,10 @@ export default {
 </script>
 
 <style scoped>
-
+.button-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
 </style>

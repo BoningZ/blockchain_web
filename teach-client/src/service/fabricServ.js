@@ -40,6 +40,10 @@ function decrypt(data){
     return postRequest('/api/chainData/decrypt',data)
 }
 
+function translate(data){
+    return postRequest('/api/chainData/translate',data)
+}
+
 export {
     createOrder,
     deleteOrder,
@@ -50,5 +54,6 @@ export {
     updateLogistics,
     addBuyerReview,
     addSellerReview,
-    decrypt
+    decrypt,
+    translate
 }
