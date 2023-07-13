@@ -2,7 +2,7 @@
   <div >
     <h2>日志列表</h2>
     <div >
-      <el-form  :inline="true">
+      <el-form  :inline="true" class="left-aligned-form">
         <el-form-item label="操作类型">
           <el-select v-model="form.rightTypeNames" multiple placeholder="选择操作类型">
             <el-option v-for="item in rightTypes" :key="item.value" :label="item.label" :value="item.value"/>
@@ -19,6 +19,8 @@
               start-placeholder="开始日期"
               end-placeholder="结束日期"/>
         </el-form-item>
+      </el-form>
+      <el-form  :inline="true" class="left-aligned-form">
         <el-form-item label="操作状态">
           <el-select v-model="form.operateState" clearable placeholder="未选择">
             <el-option v-for="item in operateStates" :key="item.value" :label="item.label" :value="item.value"/>
@@ -27,11 +29,20 @@
         <el-form-item label="用户ID"><el-input v-model="form.userId" placeholder="请输入用户ID"></el-input></el-form-item>
         <el-form-item label="描述"> <el-input v-model="form.description" placeholder="请输入描述"></el-input></el-form-item>
         <el-form-item>
-          <el-button type="primary" @click="search">查询</el-button>
+          <el-button type="warning" @click="reset" >重置</el-button>
+        </el-form-item>
+        <el-form-item>
+          <el-button type="primary" @click="search" >查询</el-button>
         </el-form-item>
       </el-form>
     </div>
     <el-table :data="logs" style="width: 100%" height="500">
+      <el-table-column label="用户ID" width="80">
+        <template #default="scope">{{scope.row.user.userId}}</template>
+      </el-table-column>
+      <el-table-column label="用户名" >
+        <template #default="scope">{{scope.row.user.username}}</template>
+      </el-table-column>
       <el-table-column prop="operateTime"  label="操作时间" sortable>
         <template #default="scope">
           <el-date-picker
@@ -53,12 +64,6 @@
         </template>
       </el-table-column>
       <el-table-column prop="description" label="描述" sortable></el-table-column>
-      <el-table-column label="用户名" >
-        <template #default="scope">{{scope.row.user.username}}</template>
-      </el-table-column>
-      <el-table-column label="用户ID" width="80">
-        <template #default="scope">{{scope.row.user.userId}}</template>
-      </el-table-column>
       <el-table-column label="操作">
         <template #default="scope">
           <el-button type="warning" @click="audit(scope.row.id,scope.$index)" v-show="scope.row.audited==null">审计</el-button>
@@ -107,9 +112,21 @@ export default {
         result.set(value, label);
         return result;
       }, new Map());
+      this.search()
     })
   },
   methods: {
+    reset(){
+      this.form= {
+        rightTypeNames: [],
+        maxLevel: 3,
+        dateRange: [],
+        operateState: null,
+        userId: null,
+        description: "",
+        page: 0
+      }
+    },
     changePage(pageNum){
       this.form.page=pageNum-1;
       searchLogs(this.form).then(res=>{
@@ -174,5 +191,10 @@ export default {
   display: flex;
   justify-content: center; /* 水平居中 */
   align-items: center; /* 垂直居中 */
+}
+.left-aligned-form {
+  display: flex;
+  justify-content: flex-start;
+  margin-left: 10px;
 }
 </style>

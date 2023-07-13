@@ -100,6 +100,8 @@ public class AuditServiceImpl implements AuditService{
     public DataResponse audit(Integer logId) {
         Log log=logRepository.getById(logId);
         if(log.getHash()==null)return CommonMethod.getReturnMessageError("无杂凑值！");
-        return CommonMethod.getReturnData(log.audit());
+        boolean result=log.audit();
+        logRepository.save(log);
+        return CommonMethod.getReturnData(result);
     }
 }

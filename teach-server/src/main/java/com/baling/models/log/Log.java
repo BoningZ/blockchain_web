@@ -38,6 +38,8 @@ public class Log {
 
     private String hash;
 
+    private Integer audited;
+
     public Log() {
     }
 
@@ -49,7 +51,8 @@ public class Log {
     }
 
     public boolean audit(){
-        return this.hash.equals(CommonMethod.dataHash16(getInfo()));
+        audited=this.hash.equals(CommonMethod.dataHash16(getInfo()))?1:2;
+        return audited==1;
     }
 
     public void generateHash(){
@@ -111,5 +114,17 @@ public class Log {
 
     public String getHash() {
         return hash;
+    }
+
+    public void setHash(String hash) {
+        this.hash = hash;
+    }
+
+    public Integer getAudited() {
+        return audited;
+    }
+
+    public void setAudited(Integer audited) {
+        this.audited = audited;
     }
 }
