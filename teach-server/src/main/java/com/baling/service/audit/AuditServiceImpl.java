@@ -65,7 +65,7 @@ public class AuditServiceImpl implements AuditService{
 
         if(description==null)description="";
 
-        Sort sort = Sort.by(Sort.Direction.ASC, "id");
+        Sort sort = Sort.by(Sort.Direction.DESC, "id");
         Pageable pageable = PageRequest.of(page, 15, sort);
 
         Page<Log> logPage;

@@ -12,7 +12,7 @@
       <div v-if="activeMenu === 'permission'">
         <h2>权限管理</h2>
 
-        <el-form  :inline="true">
+        <el-form  :inline="true" class="left-aligned-form">
           <el-form-item label="名称">
             <el-input v-model="searchRight.name"/>
           </el-form-item>
@@ -22,11 +22,15 @@
             </el-select>
           </el-form-item>
           <el-form-item>
+            <el-button type="warning" @click="resetRightSearch">重置</el-button>
+          </el-form-item>
+          <el-form-item>
             <el-button type="primary" @click="searchRightTable">搜索</el-button>
           </el-form-item>
         </el-form>
-
-        <el-button type="success" @click="newRightVisible=true">新增权限</el-button>
+        <el-form  :inline="true" class="left-aligned-form">
+          <el-button type="success" @click="newRightVisible=true" plain>新增权限</el-button>
+        </el-form>
         <el-dialog v-model="newRightVisible" title="新增权限">
           <el-form >
             <el-form-item label="权限名" >
@@ -50,17 +54,7 @@
             :data="rights"
             style="width: 100%"
             height="500">
-          <el-table-column label="操作" width="120">
-            <template #default="scope">
-              <el-button v-if="scope.row.editable" link type="success" @click="savePermission(scope.row)">确认</el-button>
-              <el-button v-else link type="primary" @click="editPermission(scope.row)">编辑</el-button>
-              <el-popconfirm title="确定删除吗？" @confirm="deletePermission(scope.row.id)">
-                <template #reference>
-                  <el-button link type="danger" >删除</el-button>
-                </template>
-              </el-popconfirm>
-            </template>
-          </el-table-column>
+
           <el-table-column prop="name" label="权限名称" width="200">
             <template #default="scope">
               <div v-if="scope.row.editable">
@@ -97,6 +91,17 @@
                   disabled/>
             </template>
           </el-table-column>
+          <el-table-column label="操作" width="120">
+            <template #default="scope">
+              <el-button v-if="scope.row.editable" link type="success" @click="savePermission(scope.row)">确认</el-button>
+              <el-button v-else link type="primary" @click="editPermission(scope.row)">编辑</el-button>
+              <el-popconfirm title="确定删除吗？" @confirm="deletePermission(scope.row.id)">
+                <template #reference>
+                  <el-button link type="danger" >删除</el-button>
+                </template>
+              </el-popconfirm>
+            </template>
+          </el-table-column>
         </el-table>
         <div class="page-container">
           <el-pagination class="center" background layout="prev, pager, next" :page-count="rightTotalPages" :current-page="searchRight.page+1" @current-change="rightChangePage"/>
@@ -110,9 +115,12 @@
       <!-- 用户权限分配 -->
       <div v-if="activeMenu === 'user'">
         <h2>用户权限分配</h2>
-        <el-form  :inline="true">
+        <el-form  :inline="true" class="left-aligned-form">
           <el-form-item label="条件">
             <el-input v-model="searchMember.condition"/>
+          </el-form-item>
+          <el-form-item>
+            <el-button type="warning" @click="resetMemberSearch">重置</el-button>
           </el-form-item>
           <el-form-item>
             <el-button type="primary" @click="searchMemberTable">搜索</el-button>
@@ -122,12 +130,6 @@
             :data="members"
             style="width: 100%"
             height="500">
-          <el-table-column label="操作" width="120">
-            <template #default="scope">
-              <el-button v-if="scope.row.editable" link type="success" @click="saveMember(scope.row)">确认</el-button>
-              <el-button v-else link type="primary" @click="editMember(scope.row)">编辑</el-button>
-            </template>
-          </el-table-column>
           <el-table-column prop="name" label="姓名" width="120"></el-table-column>
           <el-table-column prop="mid" label="工号" width="120"></el-table-column>
           <el-table-column label="拥有权限" >
@@ -140,6 +142,12 @@
               <div v-else>
                 <el-tag v-for="id in scope.row.rights" :key="id">{{rightsMap.get(id)}}</el-tag>
               </div>
+            </template>
+          </el-table-column>
+          <el-table-column label="操作" width="120">
+            <template #default="scope">
+              <el-button v-if="scope.row.editable" link type="success" @click="saveMember(scope.row)">确认</el-button>
+              <el-button v-else link type="primary" @click="editMember(scope.row)">编辑</el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -203,6 +211,19 @@ export default {
     this.searchMemberTable()
   },
   methods: {
+    resetMemberSearch(){
+      this.searchMember={
+        condition:"",
+        page:0
+      }
+    },
+    resetRightSearch(){
+      this.searchRight={
+            name:"",
+            types:[],
+            page:0
+      }
+    },
     rightChangePage(pageNum){
       this.searchRight.page=pageNum-1;
       getRightList(this.searchRight).then(res=>{
@@ -318,5 +339,10 @@ export default {
   display: flex;
   justify-content: center; /* 水平居中 */
   align-items: center; /* 垂直居中 */
+}
+.left-aligned-form {
+  display: flex;
+  justify-content: flex-start;
+  margin-left: 10px;
 }
 </style>
