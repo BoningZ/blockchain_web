@@ -59,6 +59,7 @@ public class RightServiceImpl implements RightService{
         List mList = new ArrayList();
         Map m;
         List<TypeMenu> menus=typeMenuRepository.getTypeMenusByUserType(user.getUserType());
+        menus.sort(Comparator.comparingInt(o -> o.getSysMenu().getOrderInSiblings()));
         for(TypeMenu tm:menus){
             m=new HashMap();
             m.put("name",tm.getSysMenu().getUrl());
@@ -114,7 +115,7 @@ public class RightServiceImpl implements RightService{
             rightRepository.deleteById(id);
             log.setOperateState(0);
             logRepository.save(log);
-            return ResponseEntity.ok("Delete Succeeded");
+            return ResponseEntity.ok("已删除");
         }catch (Exception e){
             log.setOperateState(1);
             logRepository.save(log);
@@ -143,7 +144,7 @@ public class RightServiceImpl implements RightService{
 
             log.setOperateState(0);
             logRepository.save(log);
-            return ResponseEntity.ok("Save Succeeded");
+            return ResponseEntity.ok("已保存");
         }catch (Exception e){
             log.setOperateState(1);
             logRepository.save(log);
@@ -170,7 +171,7 @@ public class RightServiceImpl implements RightService{
 
             log.setOperateState(0);
             logRepository.save(log);
-            return ResponseEntity.ok("Update Succeeded");
+            return ResponseEntity.ok("已更新");
         }catch (Exception e){
             log.setOperateState(1);
             logRepository.save(log);

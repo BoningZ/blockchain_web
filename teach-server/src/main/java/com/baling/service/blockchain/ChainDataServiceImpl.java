@@ -138,7 +138,7 @@ public class ChainDataServiceImpl implements ChainDataService{
             invoke("createOrder",initArgs);
             log.setOperateState(0);
             logRepository.save(log);
-            return ResponseEntity.ok("created");
+            return ResponseEntity.ok("数据已上链");
         }catch (Exception e){
             log.setOperateState(1);
             logRepository.save(log);
@@ -157,7 +157,7 @@ public class ChainDataServiceImpl implements ChainDataService{
             invoke("updateOrder",initArgs);
             log.setOperateState(0);
             logRepository.save(log);
-            return ResponseEntity.ok("updated");
+            return ResponseEntity.ok("状态更新已保存到区块链");
         }catch (Exception e){
             log.setOperateState(1);
             logRepository.save(log);
@@ -175,7 +175,7 @@ public class ChainDataServiceImpl implements ChainDataService{
             invoke("deleteOrder",initArgs);
             log.setOperateState(0);
             logRepository.save(log);
-            return ResponseEntity.ok("deleted");
+            return ResponseEntity.ok("交易已删除");
         }catch (Exception e){
             log.setOperateState(1);
             logRepository.save(log);
@@ -194,7 +194,7 @@ public class ChainDataServiceImpl implements ChainDataService{
             invoke("updateLogistics",initArgs);
             log.setOperateState(0);
             logRepository.save(log);
-            return ResponseEntity.ok("updated");
+            return ResponseEntity.ok("物流状态已更新到区块链");
         }catch (Exception e){
             log.setOperateState(1);
             logRepository.save(log);
@@ -213,7 +213,7 @@ public class ChainDataServiceImpl implements ChainDataService{
             invoke("addBuyerReview",initArgs);
             log.setOperateState(0);
             logRepository.save(log);
-            return ResponseEntity.ok("added");
+            return ResponseEntity.ok("买家评价已更新到区块链");
         }catch (Exception e){
             log.setOperateState(1);
             logRepository.save(log);
@@ -232,7 +232,7 @@ public class ChainDataServiceImpl implements ChainDataService{
             invoke("addSellerReview",initArgs);
             log.setOperateState(0);
             logRepository.save(log);
-            return ResponseEntity.ok("added");
+            return ResponseEntity.ok("卖家评价已更新区块链");
         }catch (Exception e){
             log.setOperateState(1);
             logRepository.save(log);

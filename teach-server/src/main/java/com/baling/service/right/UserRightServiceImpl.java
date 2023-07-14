@@ -81,7 +81,7 @@ public class UserRightServiceImpl implements UserRightService{
             log.setDescription("去除用户："+member.getName()+" 的"+right.getName()+"权限");
             log.setOperateState(0);
             logRepository.save(log);
-            return ResponseEntity.ok("Deleted");
+            return ResponseEntity.ok("已删除");
         }catch (Exception e){
             log.setOperateState(1);
             logRepository.save(log);
@@ -101,7 +101,7 @@ public class UserRightServiceImpl implements UserRightService{
             log.setDescription("给予用户："+member.getName()+" 权限："+right.getName());
             log.setOperateState(0);
             logRepository.save(log);
-            return ResponseEntity.ok("Added");
+            return ResponseEntity.ok("已添加");
         }catch (Exception e){
             log.setOperateState(1);
             logRepository.save(log);
@@ -178,7 +178,7 @@ public class UserRightServiceImpl implements UserRightService{
             log.setDescription("更新用户："+member.getName()+" 权限");
             log.setOperateState(0);
             logRepository.save(log);
-            return ResponseEntity.ok("updated");
+            return ResponseEntity.ok("已更新");
         }catch (Exception e){
             log.setOperateState(1);
             logRepository.save(log);

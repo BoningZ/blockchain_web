@@ -2,7 +2,7 @@
   <body id="poster">
     <el-form class="login-container" label-position="left" label-width="0px">
     <div class="login">
-        <h2>登录</h2>
+        <h2>区块链订单管理系统</h2>
         <form @submit.prevent="handleSubmit">
             <div class="form-group">
                   <el-label for="username">用户名 </el-label>
@@ -70,7 +70,7 @@ body{
 .login-container {
   border-radius: 30px;
   background-clip: padding-box;
-  margin: 150px auto;
+  margin: 200px auto;
   width: 400px;
   padding: 35px 35px 50px 35px;
   background: #fff;

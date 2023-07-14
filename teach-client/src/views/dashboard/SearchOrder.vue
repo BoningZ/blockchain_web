@@ -3,7 +3,7 @@
   <div >
     <h2>订单管理</h2>
     <div>
-      <el-form  :inline="true">
+      <el-form  :inline="true" class="left-aligned-form">
         <el-form-item label="订单编号"> <el-input v-model="searchForm.orderId" placeholder="请输入编号"></el-input></el-form-item>
         <el-form-item label="起止日期">
           <el-date-picker
@@ -15,6 +15,8 @@
         </el-form-item>
         <el-form-item label="卖家编号"> <el-input v-model="searchForm.sellerId" placeholder="请输入编号"></el-input></el-form-item>
         <el-form-item label="买家编号"> <el-input v-model="searchForm.buyerId" placeholder="请输入编号"></el-input></el-form-item>
+      </el-form>
+      <el-form :inline="true" class="left-aligned-form">
         <el-form-item label="物流状态">
           <el-select v-model="searchForm.logisticsStatus" :clearable="true" placeholder="选择物流状态">
             <el-option v-for="item in logisticsStatusList" :key="item.value" :label="item.label" :value="item.value"/>
@@ -26,30 +28,31 @@
           </el-select>
         </el-form-item>
         <el-form-item>
-          <el-button type="warning" @click="clearSearch" v-show="hasRight('RIGHT_QUERY')">清空条件</el-button>
+          <el-button type="warning" @click="clearSearch" v-show="hasRight('RIGHT_QUERY')">重置</el-button>
         </el-form-item>
         <el-form-item>
           <el-button type="primary" @click="searchOrder" v-show="hasRight('RIGHT_QUERY')">查询</el-button>
         </el-form-item>
       </el-form>
     </div>
-    <el-button type="success" @click="newOrderDialog=true" v-show="hasRight('RIGHT_ADD')">创建订单</el-button>
-    <el-popconfirm title="确定删除吗？" @confirm="multiDelete" v-show="readyToDelete.length>0">
-      <template #reference>
-        <el-button type="danger"  v-show="readyToDelete.length>0&&hasRight('RIGHT_DELETE')">批量删除</el-button>
-      </template>
-    </el-popconfirm>
+    <el-form :inline="true" class="left-aligned-form">
+      <el-button type="success" @click="newOrderDialog=true" v-show="hasRight('RIGHT_ADD')" plain>创建订单</el-button>
+      <el-popconfirm title="确定删除吗？" @confirm="multiDelete" v-show="readyToDelete.length>0">
+        <template #reference>
+          <el-button type="danger"  v-show="readyToDelete.length>0&&hasRight('RIGHT_DELETE')" plain>批量删除</el-button>
+        </template>
+      </el-popconfirm>
+    </el-form>
 
 
     <el-table :data="orders" style="width: 100%" height="500"  @selection-change="handleSelectionChange">
-      <el-table-column prop="orderId"  label="订单号" sortable width="120"/>
-      <el-table-column prop="orderTime"  label="订单日期" sortable width="120"/>
       <el-table-column  width="80">
         <template #default="scope">
           <el-button size="small" type="info" @click="decrypt(scope.row.name)">解密</el-button>
         </template>
       </el-table-column>
       <el-table-column prop="name"  label="订单名称" show-overflow-tooltip/>
+      <el-table-column prop="orderId"  label="订单号" sortable width="120"/>
       <el-table-column label="订单状态" width="100">
         <template #default="scope">
           <el-tag>{{orderStatusMap.get(scope.row.status)}}</el-tag>
@@ -63,7 +66,8 @@
       <el-table-column prop="buyerId"  label="买家编号" sortable width="110"/>
       <el-table-column prop="sellerId"  label="卖家编号" sortable width="110"/>
       <el-table-column prop="quantity"  label="数量" sortable width="80"/>
-      <el-table-column prop="amount"  label="金额" sortable width="80"/>
+      <el-table-column prop="amount"  label="单价" sortable width="80"/>
+      <el-table-column prop="orderTime"  label="订单日期" sortable width="120"/>
       <el-table-column label="操作">
         <template #default="scope">
           <el-button size="small" type="primary" @click="openEdit(scope.row)">编辑</el-button>
@@ -108,14 +112,20 @@
         <el-form-item label="订单号" >
           <el-input v-model="newOrderForm.orderId"  />
         </el-form-item>
-        <el-form-item label="名称">
+        <el-form-item label="订单名称">
         <el-form :inline="true">
           <el-form-item  >
             <el-input v-model="newOrderForm.name"  />
           </el-form-item>
           <el-form-item>
-            <el-switch v-model="newOrderForm.encrypt"  style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949"
-                       active-text="加密" inactive-text="不加密"/>
+            <el-switch
+                v-model="newOrderForm.encrypt"
+                class="ml-2"
+                inline-prompt
+                style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949"
+                active-text="加密"
+                inactive-text="不加密"
+            />
           </el-form-item>
         </el-form>
         </el-form-item>
@@ -135,7 +145,7 @@
         <el-form-item label="数量">
           <el-input-number v-model="newOrderForm.quantity" :min="0" :max="9999999"  />
         </el-form-item>
-        <el-form-item label="金额">
+        <el-form-item label="单价">
           <el-input-number v-model="newOrderForm.amount" :precision="2" :min="0" :step="0.01" :max="9999999" />
         </el-form-item>
 
@@ -143,7 +153,7 @@
       <template #footer>
             <span class="dialog-footer">
               <el-button @click="newOrderDialog = false">取消</el-button>
-              <el-button type="primary" @click="submitOrder">提交</el-button>
+              <el-button type="primary" @click="submitOrder">提交上链</el-button>
             </span>
       </template>
     </el-dialog>
@@ -153,33 +163,35 @@
         <el-form-item label="订单状态" v-show="hasRight('RIGHT_UPDATE_STATUS')">
           <el-form :inline="true">
             <el-form-item >
-              <el-select v-model="editForm.status" :clearable="true" placeholder="订单状态">
+              <el-select v-model="editForm.status" :clearable="true" placeholder="订单状态" @change="editing.push('status')">
                 <el-option v-for="item in orderStatusList" :key="item.value" :label="item.label" :value="item.value"/>
               </el-select>
-            </el-form-item>
-            <el-form-item>
-              <el-button @click="submitOrderStatus">提交</el-button>
             </el-form-item>
           </el-form>
         </el-form-item>
         <el-form-item label="物流状态" v-show="hasRight('RIGHT_UPDATE_LOGISTICS')">
           <el-form :inline="true">
             <el-form-item >
-              <el-select v-model="editForm.logistics" :clearable="true" placeholder="物流状态">
+              <el-select v-model="editForm.logistics" :clearable="true" placeholder="物流状态" @change="editing.push('logistics')">
                 <el-option v-for="item in logisticsStatusList" :key="item.value" :label="item.label" :value="item.value"/>
               </el-select>
             </el-form-item>
-            <el-form-item>
-              <el-button @click="submitOrderLogistics">提交</el-button>
-            </el-form-item>
           </el-form>
         </el-form-item>
-        <el-form-item label="买家评价" v-show="hasRight('RIGHT_UPDATE_BUYER')">
+        <el-form-item >
+          <el-switch
+              v-model="editTranslate"
+              inline-prompt
+              active-text="显示翻译面板"
+              inactive-text="无翻译面板"
+          />
+        </el-form-item>
+        <el-form-item label="买家评价" v-show="hasRight('RIGHT_UPDATE_BUYER')" @input="editing.push('buyer')">
           <el-row style="width: 800px;">
-            <el-col :span="9">
+            <el-col :span="9" v-show="editTranslate">
               <el-input :rows="4" type="textarea" v-model="editForm.buyerReviewCh"  ></el-input>
             </el-col>
-            <el-col :span="2"  class="button-container">
+            <el-col :span="2"  class="button-container" v-show="editTranslate">
               <el-row>
                 <el-button @click="translate('buyer','zh')">→</el-button>
               </el-row>
@@ -190,18 +202,15 @@
             <el-col :span="9">
               <el-input :rows="4" type="textarea" v-model="editForm.buyerReview" ></el-input>
             </el-col>
-            <el-col :span="4" class="button-container">
-              <el-button @click="submitOrderBuyer">提交</el-button>
-            </el-col>
           </el-row>
         </el-form-item>
 
-        <el-form-item label="卖家评价" v-show="hasRight('RIGHT_UPDATE_SELLER')" >
-          <el-row style="width: 800px;">
-            <el-col :span="9">
+        <el-form-item label="卖家评价" v-show="hasRight('RIGHT_UPDATE_SELLER')" @input="editing.push('seller')">
+          <el-row style="width: 800px;" >
+            <el-col :span="9" v-show="editTranslate">
               <el-input :rows="4" type="textarea" v-model="editForm.sellerReviewCh"  ></el-input>
             </el-col>
-            <el-col :span="2"  class="button-container">
+            <el-col :span="2"  class="button-container" v-show="editTranslate">
               <el-row>
                 <el-button @click="translate('seller','zh')">→</el-button>
               </el-row>
@@ -212,10 +221,10 @@
             <el-col :span="9">
               <el-input :rows="4" type="textarea" v-model="editForm.sellerReview" ></el-input>
             </el-col>
-            <el-col :span="4" class="button-container">
-              <el-button @click="submitOrderSeller">提交</el-button>
-            </el-col>
           </el-row>
+        </el-form-item>
+        <el-form-item >
+          <el-button @click="updateOrder" v-show="editing.length>0">提交</el-button>
         </el-form-item>
       </el-form>
     </el-dialog>
@@ -274,6 +283,8 @@ export default {
 
       editForm:{},
       editDialog:false,
+      editing:[],
+      editTranslate:false,
 
       decryptDialog:false,
       decrypted:"",
@@ -285,8 +296,17 @@ export default {
     this.getOrderStatusEnum()
     this.getLogisticsStatusEnum()
     this.getRightTypes()
+    this.searchOrder()
   },
   methods:{
+    updateOrder(){
+      if(this.editing.indexOf('status')>-1)this.submitOrderStatus();
+      if(this.editing.indexOf('logistics')>-1)this.submitOrderLogistics()
+      if(this.editing.indexOf('buyer')>-1)this.submitOrderBuyer()
+      if(this.editing.indexOf('seller')>-1)this.submitOrderSeller()
+      this.editing=[]
+      this.editDialog=false
+    },
     clearSearch(){
       this.searchForm={
         orderId:"",
@@ -459,5 +479,10 @@ export default {
   flex-direction: column;
   justify-content: center;
   align-items: center;
+}
+.left-aligned-form {
+  display: flex;
+  justify-content: flex-start;
+  margin-left: 10px;
 }
 </style>
