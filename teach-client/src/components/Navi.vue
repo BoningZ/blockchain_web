@@ -52,6 +52,9 @@ export default {
   align-items: center; /* 垂直居中对齐 */
 }
 
+.el-menu-demo .el-menu-item {
+  width: 200px; /* 调整宽度为所需的大小 */
+}
 
 .flex-grow {
   flex-grow: 1;
