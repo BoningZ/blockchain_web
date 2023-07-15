@@ -1,1 +1,0 @@
-[2023-06-15 10:13:00] [INFO ] org.hyperledger.fabric.sdk.Channel.initialize(Channel.java:1149) org.hyperledger.fabric.sdk.Channel - Channel Channel{id: 3, name: mychannel} eventThread started shutdown: false  thread: null 

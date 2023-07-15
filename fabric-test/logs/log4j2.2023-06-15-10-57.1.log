@@ -1,2 +1,0 @@
-[2023-06-15 10:57:12] [INFO ] com.sansec.fabrictest.sdk.FabricClient.invoke(FabricClient.java:197) com.sansec.fabrictest.sdk.FabricClient - peer0.org1.example.com invoke proposal save sucess
-[2023-06-15 10:57:12] [INFO ] com.sansec.fabrictest.sdk.FabricClient.invoke(FabricClient.java:197) com.sansec.fabrictest.sdk.FabricClient - peer0.org2.example.com invoke proposal save sucess

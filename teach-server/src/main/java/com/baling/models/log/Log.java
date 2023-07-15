@@ -57,6 +57,7 @@ public class Log {
 
     public void generateHash(){
         this.hash= CommonMethod.dataHash16(getInfo());
+        this.audited=null;
     }
 
     private String getInfo(){

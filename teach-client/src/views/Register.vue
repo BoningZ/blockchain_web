@@ -115,7 +115,7 @@ export default {
 
 <style>
 #poster{
-  background:url("../assets/register.jpg") no-repeat;
+  background:url("../assets/register.png") no-repeat;
   background-position: center;
   height: 100%;
   width: 100%;

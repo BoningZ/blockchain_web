@@ -1,3 +1,0 @@
-[2023-06-15 18:23:50] [WARN ] org.hyperledger.fabric.sdk.helper.Config.<init>(Config.java:127) org.hyperledger.fabric.sdk.helper.Config - Failed to load any configuration from: config.properties. Using toolkit defaults
-[2023-06-15 18:23:54] [INFO ] org.hyperledger.fabric.sdk.Channel.initialize(Channel.java:1149) org.hyperledger.fabric.sdk.Channel - Channel Channel{id: 3, name: mychannel} eventThread started shutdown: false  thread: null 
-[2023-06-15 18:23:54] [ERROR] com.sansec.fabrictest.sdk.FabricClient.queryChaincode(FabricClient.java:241) com.sansec.fabrictest.sdk.FabricClient - data get error make sure the chaincode basicinfo has been successfully instantiated and try again: chaincode basicinfo not found

@@ -57,7 +57,7 @@ export default {
 
 <style>
 #poster {
-  background:url("../assets/login.jpg") no-repeat;
+  background:url("../assets/login.png") no-repeat;
   background-position: center;
   height: 100%;
   width: 100%;

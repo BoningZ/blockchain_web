@@ -2,7 +2,7 @@ import
 <template>
   <router-view>
     <div class="home">
-      <el-card v-for="(item,index) in rightList" v-bind:key="item" style="width: 80%;margin-left: 10%;margin-top: 5px" >
+      <el-card v-for="(item,index) in rightList" v-bind:key="item" style="width: 70%;margin-left: 15%;margin-top: 5px" >
         <template #header>
           <el-row>
             <el-col :span="4">
